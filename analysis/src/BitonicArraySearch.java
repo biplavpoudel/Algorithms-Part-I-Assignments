@@ -4,7 +4,7 @@
  *  Last modified:     29 Mar, 2025
  **************************************************************************** */
 
-// An array is bitonic if it is comprised of an increasing sequence of integers followed immediately by a decreasing sequence of integers.
+// An array is bitonic if it comprises an increasing sequence of integers followed immediately by a decreasing sequence of integers.
 // Write a program that, given a bitonic array of n distinct integer values,
 // determines whether a given integer is in the array.
 
@@ -18,53 +18,46 @@ import edu.princeton.cs.algs4.StdOut;
 public class BitonicArraySearch {
     public static void main(String[] args) {
         int size = StdIn.readInt();
-        Integer[] arr = new Integer[size];
+        int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
             arr[i] = StdIn.readInt();
         }
-        StdOut.printf("Enter an integer to be searched: ");
         int key = StdIn.readInt();
         search(arr, key);
     }
 
-    public static void search(Integer[] arr, int key) {
+    public static void search(int[] arr, int key) {
         // we can find the inflection point using binary search?
-        Integer[] div = new Integer[2];
+        StdOut.printf("Now we divide the bitonic arrays into two...");
+        int peak = divide(arr);
+        StdOut.printf("The maximum element is: %d\n", arr[peak]);
+        StdOut.printf("The two arrays are:\n");
+        for (int i = 0; i <= peak; i++) {
+            StdOut.print(arr[i] + " ");
+        }
+        StdOut.printf("\n");
+        for (int i = peak + 1; i < arr.length; i++) {
+            StdOut.print(arr[i] + " ");
+        }
     }
 
     // arr = {1,2,5,4,3,2,1}
-    public static Integer[] divide(Integer[] arr) {
-        int size = arr.length;
-        Integer[] div = new Integer[2]; // div0 = hi_asc, div1 = hi_desc
+    public static int divide(int[] arr) {
+        // find maximum integer in O(log n) comparison
+        int left = 0;
+        int right = arr.length;
 
-        int lo_asc = 0;
-        int hi_asc = size - 1;
-        int hi_desc = size - 1;
-        int lo_desc = size - 1;
-
-        while (hi_asc <= hi_desc) {
-            int inflection = (lo_asc + hi_asc) / 2;   // need to change this asap
-            int preceding = inflection--;
-            int succeeding = inflection++;
-
-            // inflection and hi_asc are kept same
-            if (arr[inflection] >= arr[preceding] && arr[inflection] >= arr[succeeding]) {
-                hi_asc = inflection;
-                hi_desc = succeeding;
-                div[0] = hi_asc;
-                div[1] = hi_desc;
-                return div;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (mid == 0 || arr[mid] >= arr[mid + 1] && arr[mid] >= arr[mid - 1]) return mid;
+            else if (arr[mid] < arr[mid + 1]) {
+                left = mid;
             }
-            else if (arr[inflection] < arr[succeeding]) {
-                hi_asc = succeeding;
-                hi_desc = succeeding + 1;
-            }
-            else if (arr[inflection] < arr[preceding]) {
-                hi_asc = preceding;
-                hi_desc = inflection;
+            else {
+                right = mid;
             }
         }
-        return null;
+        return -1;
     }
 
     public static int fwdBinarySearch(Integer[] arr, int k) {
