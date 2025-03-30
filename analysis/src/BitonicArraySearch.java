@@ -28,16 +28,37 @@ public class BitonicArraySearch {
 
     public static void search(int[] arr, int key) {
         // we can find the inflection point using binary search?
-        StdOut.printf("Now we divide the bitonic arrays into two...");
+        // StdOut.printf("Now we divide the bitonic arrays into two sub-arrays");
         int peak = divide(arr);
-        StdOut.printf("The maximum element is: %d\n", arr[peak]);
-        StdOut.printf("The two arrays are:\n");
+        int[] firstArr = new int[peak + 1];
+        int[] secArr = new int[arr.length - peak - 1];
+        StdOut.printf("The maximum element is: %d", arr[peak]);
         for (int i = 0; i <= peak; i++) {
-            StdOut.print(arr[i] + " ");
+            firstArr[i] = arr[i];
         }
         StdOut.printf("\n");
+        int j = 0;
         for (int i = peak + 1; i < arr.length; i++) {
-            StdOut.print(arr[i] + " ");
+            secArr[j] = arr[i];
+            j++;
+        }
+        if (key == arr[peak]) StdOut.printf("The %d is found at the peak!\n", key);
+        else {
+            int loc_a = fwdBinarySearch(firstArr, key);
+            if (loc_a != -1) {
+                StdOut.printf("The %d is found in ascending part of the array!\n", arr[loc_a]);
+            }
+            else {
+                StdOut.printf("Not found in ascending part, so looking in descending part!\n");
+                int loc_b = revBinarySearch(secArr, key);
+                if (loc_b != -1) {
+                    StdOut.printf("The %d is found in the descending part!\n",
+                                  arr[peak + 1 + loc_b]);
+                }
+                else {
+                    StdOut.printf("The item %d not found!\n", key);
+                }
+            }
         }
     }
 
@@ -60,7 +81,7 @@ public class BitonicArraySearch {
         return -1;
     }
 
-    public static int fwdBinarySearch(Integer[] arr, int k) {
+    public static int fwdBinarySearch(int[] arr, int k) {
         int size = arr.length;
         int lo = 0;
         int hi = size - 1;
@@ -78,19 +99,19 @@ public class BitonicArraySearch {
         return -1;
     }
 
-    public static int revBinarySearch(Integer[] arr, int k) {
+    public static int revBinarySearch(int[] arr, int k) {
         int size = arr.length;
-        int lo = size - 1;
         int hi = 0;
+        int lo = size - 1;
 
         while (hi <= lo) {
             int mid = (hi + lo) / 2;
             if (arr[mid] == k) return mid;
             else if (k > arr[mid]) {
-                hi = mid - 1;
+                lo = mid - 1;
             }
             else if (k < arr[mid]) {
-                lo = mid + 1;
+                hi = mid + 1;
             }
         }
         return -1;
