@@ -101,7 +101,7 @@ public class EggDrop {
         int level = 1;
 
         // while floor is less than total floors and floor doesn't reach T
-        while (level < size && floors[level] < critical) {
+        while (level <= size && floors[level] < critical) {
             level *= 2;
             numberOfTosses++;
         }
@@ -133,7 +133,7 @@ public class EggDrop {
         // 2 eggs and ∼ 2 * (square root of n) tosses
         int numberOfTosses = 0;
         double level = Math.sqrt(size);
-        while (level < size && level < critical) {
+        while (level <= size && level < critical) {
             level += Math.sqrt(size);
             numberOfTosses++;
         }
@@ -151,11 +151,43 @@ public class EggDrop {
                 break;
             }
         }
-        StdOut.printf("%d broke at Floor %d at %d tosses\n", brokenEgg, loc, numberOfTosses);
+        StdOut.printf("%d broke from Floor %d at %d tosses\n", brokenEgg, loc, numberOfTosses);
         StdOut.printf("The critical value was: %d\n", critical);
     }
 
     public static void versionFour(int size, int critical) {
         // 2 eggs and ≤ c * (square root of T) tosses for some fixed constant c
+        // we use stepping-size as triangular number series
+
+        int numberOfTosses = 0;
+        int t = 1;// t
+        // if t=1, floor = 1
+        // if t=2, floor = 1+2=3
+        // if t=3, floor = 1+2+3=6
+        // i.e. tosses = 1,3,6,...,t(t+1)/2 i.e. t<=sqrt(2T)
+
+        int level = 1; // current floor
+        int brokenEgg = 0;
+
+        while (level <= size && level < critical) {
+            level = t * (t + 1) / 2;
+            t++;
+            numberOfTosses++;
+        }
+        brokenEgg++;
+        // T lies in [ (t-1)t/2 + 1, t(t+1)/2 ]
+        int lo = numberOfTosses * (numberOfTosses - 1) / 2 + 1;
+        int hi = Math.min(level, size);
+        int loc = hi;
+        for (int floor = lo; floor <= hi; floor++) {
+            numberOfTosses++;
+            if (floor >= critical) {
+                loc = floor;
+                brokenEgg++;
+                break;
+            }
+        }
+        StdOut.printf("%d broke from Floor %d at %d tosses\n", brokenEgg, loc, numberOfTosses);
+        StdOut.printf("The critical value was: %d\n", critical);
     }
 }
