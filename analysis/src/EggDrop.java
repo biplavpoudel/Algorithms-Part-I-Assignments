@@ -89,13 +89,14 @@ public class EggDrop {
 
     public static void versionTwo(int size, int critical) {
         //∼ log T eggs and ∼ 2 log T tosses
-        // number of tosses is twice the eggs
+        // binary search takes logn but T is smaller than n
+        // so we need to find range of T and perform binary search for tosses to not exceed log T
 
         int[] floors = new int[size + 1];
         for (int i = 1; i <= size; i++) {
             floors[i] = i;
         }
-        int numberOfEggs = 1;
+        int numberOfEggs = 1; // first egg breaks when level > critical
         int numberOfTosses = 0;
         int level = 1;
 
@@ -130,6 +131,28 @@ public class EggDrop {
 
     public static void versionThree(int size, int critical) {
         // 2 eggs and ∼ 2 * (square root of n) tosses
+        int numberOfTosses = 0;
+        double level = Math.sqrt(size);
+        while (level < size && level < critical) {
+            level += Math.sqrt(size);
+            numberOfTosses++;
+        }
+        int brokenEgg = 1; // first egg breaks when level > k.sqrt(n)
+        // the range of T is: [(k-1)sqrt(n)+1, k*sqrt(n)-1
+        int lo = (int) (level - Math.sqrt(size) - 1);
+        int hi = (int) (level);
+        int loc = hi;
+
+        for (int floor = lo; floor <= hi; floor++) {
+            numberOfTosses++;
+            if (floor >= critical) {
+                loc = floor;
+                brokenEgg++;
+                break;
+            }
+        }
+        StdOut.printf("%d broke at Floor %d at %d tosses\n", brokenEgg, loc, numberOfTosses);
+        StdOut.printf("The critical value was: %d\n", critical);
     }
 
     public static void versionFour(int size, int critical) {
