@@ -23,7 +23,7 @@ public class EggDrop {
     public static void main(String[] args) {
         int size = Integer.parseInt(args[0]);
         int version = Integer.parseInt(args[1]);
-        int critical = StdRandom.uniformInt(0, size);
+        int critical = StdRandom.uniformInt(1, size);
         switch (version) {
             case 0:
                 versionZero(size, critical);
@@ -46,11 +46,14 @@ public class EggDrop {
     public static void versionZero(int size, int critical) {
         // 1 egg, ≤ T tosses
         int numberOfEggs = 1;
-        for (int i = 0; i < size; i++) {
-            if (i == critical) {
+        int i = 1;
+        int floor = 1;
+        while (numberOfEggs != 0) {
+            if (i >= critical) {
                 numberOfEggs--;
                 StdOut.printf("The egg broke at Floor %d!", i);
             }
+            i++;
         }
 
 
@@ -58,11 +61,50 @@ public class EggDrop {
 
     public static void versionOne(int size, int critical) {
         //∼ 1 log n eggs and ∼ 1 lgn tosses.
+        // we need to find the value of T at which the eggs start breaking
+        // number of tosses is equal to number of eggs so no need to count eggs used
+        int[] floors = new int[size + 1];
+        int numberOfEggs = 0;
+        for (int i = 1; i <= size; i++) {
+            floors[i] = i;
+        }
+        int lo = 1;
+        int hi = size - 1;
 
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (floors[mid] == critical) {
+                numberOfEggs++;
+                StdOut.printf("The number of eggs broke is %d\n", numberOfEggs);
+                StdOut.printf("The eggs start breaking from Floor %d\n", floors[mid]);
+                return;
+            }
+            else if (floors[mid] > critical) {
+                hi = mid - 1;
+                numberOfEggs++;
+            }
+            else lo = mid + 1;
+        }
     }
 
     public static void versionTwo(int size, int critical) {
         //∼ log T eggs and ∼ 2 log T tosses
+        // number of tosses is twice the eggs
+
+        int[] floors = new int[size + 1];
+        for (int i = 1; i <= size; i++) {
+            floors[i] = i;
+        }
+        int numberOfEggs = 0;
+        int numberOfTosses = 0;
+        int level = 1;
+
+        // while floor is less than total floors and floor doesn't reach T
+        while (level < size && floors[level] < critical) {
+            level *= 2;
+        }
+        // the level is in [2^(k-1) + 1, 2^k - 1], where 2^k is when egg breaks
+        // so T is in the range [2^(k-1) + 1, 2^k - 1].
     }
 
     public static void versionThree(int size, int critical) {
