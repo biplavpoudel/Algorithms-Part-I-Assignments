@@ -95,16 +95,37 @@ public class EggDrop {
         for (int i = 1; i <= size; i++) {
             floors[i] = i;
         }
-        int numberOfEggs = 0;
+        int numberOfEggs = 1;
         int numberOfTosses = 0;
         int level = 1;
 
         // while floor is less than total floors and floor doesn't reach T
         while (level < size && floors[level] < critical) {
             level *= 2;
+            numberOfTosses++;
         }
         // the level is in [2^(k-1) + 1, 2^k - 1], where 2^k is when egg breaks
         // so T is in the range [2^(k-1) + 1, 2^k - 1].
+        // binary_search(arr, critical, level/2+1, level-1)
+        int lo = level / 2 + 1;
+        int hi = Math.min(level, size);
+
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            numberOfTosses++;
+
+            if (floors[mid] == critical) {
+                numberOfEggs++;
+                StdOut.printf("The number of eggs broken is %d\n", numberOfEggs);
+                StdOut.printf("The eggs start breaking from Floor %d\n", floors[mid]);
+                return;
+            }
+            else if (floors[mid] > critical) {
+                hi = mid - 1;
+                numberOfEggs++;
+            }
+            else lo = mid + 1;
+        }
     }
 
     public static void versionThree(int size, int critical) {
