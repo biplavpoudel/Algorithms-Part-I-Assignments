@@ -160,7 +160,7 @@ public class EggDrop {
         // we use stepping-size as triangular number series
 
         int numberOfTosses = 0;
-        int t = 1;// t
+        int t = 1; // t
         // if t=1, floor = 1
         // if t=2, floor = 1+2=3
         // if t=3, floor = 1+2+3=6
