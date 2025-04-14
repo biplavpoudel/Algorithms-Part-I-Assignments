@@ -22,11 +22,11 @@ public class QueueTwoStacks {
             stack_arr = (Item[]) new Object[1];
         }
 
-        public boolean isEmpty() {
+        private boolean isEmpty() {
             return N == 0;
         }
 
-        public Item pop() {
+        private Item pop() {
             if (isEmpty()) {
                 throw new NoSuchElementException("Stack underflow!");
             }
@@ -38,14 +38,14 @@ public class QueueTwoStacks {
             return last;
         }
 
-        public void push(Item item) {
+        private void push(Item item) {
             if (N == stack_arr.length) {
                 resize(stack_arr.length * 2);
             }
             stack_arr[N++] = item;
         }
 
-        public void resize(int capacity) {
+        private void resize(int capacity) {
             @SuppressWarnings("unchecked")
             Item[] new_arr = (Item[]) new Object[capacity];
             for (int i = 0; i < N; i++) {
