@@ -56,13 +56,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         // there will be null items if randomly removed so reorder
         if (count < arr.length && (top + 1) == arr.length) reorder();
         arr[++top] = item;
+        count++;
     }
 
     // remove and return a random item
     public Item dequeue() {
-        int randIndex = StdRandom.uniformInt(0, arr.length);
+        int randIndex;
+        // selects new index if the item at given index is null already
+        do {
+            randIndex = StdRandom.uniformInt(0, arr.length);
+        } while (arr[randIndex] != null);
+
         Item randItem = arr[randIndex];
         arr[randIndex] = null;
+        count--;
         return randItem;
     }
 
