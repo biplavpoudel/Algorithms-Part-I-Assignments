@@ -122,7 +122,6 @@ public class Deque<Item> implements Iterable<Item> {
 
     // unit testing (required)
     public static void main(String[] args) {
-        int N = StdIn.readInt();
         Deque<Integer> deque = new Deque<>();
         while (!StdIn.isEmpty()) {
             deque.addLast(StdIn.readInt());

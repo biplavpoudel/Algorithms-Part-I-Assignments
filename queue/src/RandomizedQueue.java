@@ -4,20 +4,21 @@
  *  Last modified:     14 Apr, 2025
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
     private Item[] arr;
     private int count;
-    private int top;
 
     // construct an empty randomized queue
     @SuppressWarnings("unchecked")
-    public RandomizedQueue(int N) {
-        arr = (Item[]) new Object[N];
-        top = arr.length - 1;
+    public RandomizedQueue() {
+        arr = (Item[]) new Object[1];
     }
 
     // is the randomized queue empty?
@@ -39,52 +40,85 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         arr = new_arr;
     }
 
-    public void reorder() {
-        @SuppressWarnings("unchecked")
-        Item[] new_arr = (Item[]) new Object[count];
-        for (int i = 0, j = 0; i < size(); i++, j++) {
-            while (arr[j] == null) j++;
-            new_arr[i] = arr[j];
-        }
-        arr = new_arr;
-        top = count - 1;
-    }
-
     // add the item
     public void enqueue(Item item) {
+        if (item == null) throw new IllegalArgumentException();
         if (count == arr.length) resize(arr.length * 2);
-        // there will be null items if randomly removed so reorder
-        if (count < arr.length && (top + 1) == arr.length) reorder();
-        arr[++top] = item;
-        count++;
+        arr[count++] = item;  // if count=3, enqueue at 3 and increment count to 4
     }
 
     // remove and return a random item
     public Item dequeue() {
-        int randIndex;
-        // selects new index if the item at given index is null already
-        do {
-            randIndex = StdRandom.uniformInt(0, arr.length);
-        } while (arr[randIndex] != null);
-
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        // swap last non-null element to the null position
+        int randIndex = StdRandom.uniformInt(0, count);
         Item randItem = arr[randIndex];
-        arr[randIndex] = null;
+
+        arr[randIndex] = arr[count - 1];  // assign last element to this index
+        arr[count - 1] = null;
         count--;
         return randItem;
     }
 
     // return a random item (but do not remove it)
     public Item sample() {
-        int randIndex = StdRandom.uniformInt(0, arr.length);
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        int randIndex = StdRandom.uniformInt(0, count);
         Item randItem = arr[randIndex];
         return randItem;
     }
 
     // return an independent iterator over items in random order
     public Iterator<Item> iterator() {
+        return new RandIterator();
+    }
+
+    public class RandIterator implements Iterator<Item> {
+        private int remaining;
+
+        public RandIterator() {
+            StdRandom.shuffle(arr, 0, count);
+            remaining = count;
+        }
+
+        public boolean hasNext() {
+            return remaining > 0;
+        }
+
+        public Item next() {
+            return arr[--remaining];
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     // unit testing (required)
     public static void main(String[] args) {
+        RandomizedQueue<Integer> queue = new RandomizedQueue<>();
+        while (!StdIn.isEmpty()) {
+            queue.enqueue(StdIn.readInt());
+        }
+        StdOut.printf("Item: %d was dequeued\n", queue.dequeue());
+        StdOut.printf("Random sample item: %d\n", queue.sample());
+        StdOut.print("The first random ordering of the queue is:\n");
+        for (Integer item : queue) {
+            StdOut.print(item + "\t");
+        }
+        StdOut.print("\nThe second independent random ordering of the queue is:\n");
+        for (Integer item : queue) {
+            StdOut.print(item + "\t");
+        }
+        StdOut.print("\nThe third independent random ordering of the queue is:\n");
+        for (Integer item : queue) {
+            StdOut.print(item + "\t");
+        }
+        StdOut.print("\n");
+
     }
 }
