@@ -18,8 +18,8 @@ public class Deque<Item> implements Iterable<Item> {
 
     // construct an empty deque
     @SuppressWarnings("unchecked")
-    public Deque(int N) {
-        arr = (Item[]) new Object[N];
+    public Deque() {
+        arr = (Item[]) new Object[1];
         head = 0;
         tail = -1;
     }
@@ -123,7 +123,7 @@ public class Deque<Item> implements Iterable<Item> {
     // unit testing (required)
     public static void main(String[] args) {
         int N = StdIn.readInt();
-        Deque<Integer> deque = new Deque<>(N);
+        Deque<Integer> deque = new Deque<>();
         while (!StdIn.isEmpty()) {
             deque.addLast(StdIn.readInt());
         }
