@@ -21,7 +21,7 @@ public class Deque<Item> implements Iterable<Item> {
     public Deque() {
         arr = (Item[]) new Object[1];
         head = 0;
-        tail = -1;
+        tail = 0;
     }
 
     // is the deque empty?
@@ -37,13 +37,13 @@ public class Deque<Item> implements Iterable<Item> {
     private void resize(int capacity) {
         // @SuppressWarnings("unchecked")
         Item[] newArr = (Item[]) new Object[capacity];
-        int old_length = size();
-        for (int i = 0; i < old_length; i++) {
+        int oldLength = size();
+        for (int i = 0; i < oldLength; i++) {
             newArr[i] = arr[(head + i) % arr.length];
         }
         arr = newArr;
         head = 0;
-        tail = old_length - 1;
+        tail = oldLength - 1;
     }
 
     // add the item to the front
@@ -54,11 +54,16 @@ public class Deque<Item> implements Iterable<Item> {
         // if array full, resize first
         if (count == arr.length)
             resize(arr.length * 2);
-        // if empty array, when an element is added, tail = head = 0
-        if (isEmpty()) tail = head;
         // then shift head to the left and add new item to it
-        // StdOut.printf("Array length is: %d", arr.length);
-        head = (head - 1 + arr.length) % arr.length;
+
+        // if empty array, when an element is added, tail = head = 0
+        if (isEmpty()) {
+            head = 0;
+            tail = 0;
+        }
+        else {
+            head = (head - 1 + arr.length) % arr.length;
+        }
         arr[head] = item;
         count++;
     }
@@ -71,7 +76,10 @@ public class Deque<Item> implements Iterable<Item> {
         // if array full, resize first
         if (count > 0 && count == arr.length) resize(arr.length * 2);
         // then shift head to the left and add new item to it
-        tail = (tail + 1 + arr.length) % arr.length;    // if empty array, tail will be 0 (-1+1=0)
+
+        if (isEmpty()) tail = 0;
+        else tail = (tail + 1 + arr.length) % arr.length;
+
         arr[tail] = item;
         count++;
     }
@@ -83,9 +91,12 @@ public class Deque<Item> implements Iterable<Item> {
         }
         Item item = arr[head];
         arr[head] = null;
-        if (isEmpty()) head = 0;
-        else head = (head + 1 + arr.length) % arr.length;
         count--;
+        if (isEmpty()) {
+            head = 0;
+            tail = -1;
+        }
+        else head = (head + 1 + arr.length) % arr.length;
         if (count > 0 && count <= arr.length / 4) resize(arr.length / 2);
         return item;
     }
@@ -97,9 +108,12 @@ public class Deque<Item> implements Iterable<Item> {
         }
         Item item = arr[tail];
         arr[tail] = null;
-        if (isEmpty()) tail = 0;
-        else tail = (tail - 1 + arr.length) % arr.length;
         count--;
+        if (isEmpty()) {
+            tail = -1;
+            head = 0;
+        }
+        else tail = (tail - 1 + arr.length) % arr.length;
         if (count > 0 && count <= arr.length / 4) resize(arr.length / 2);
         return item;
     }
@@ -117,12 +131,12 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         public Item next() {
-            if (i > count) throw new NoSuchElementException();
+            if (i >= count) throw new NoSuchElementException();
             return arr[(head + i++) % arr.length];
         }
 
         public void remove() {
-            throw new NoSuchElementException();
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -136,28 +150,36 @@ public class Deque<Item> implements Iterable<Item> {
         for (Integer item : deque) {
             StdOut.print(item + "\t");
         }
+        deque.isEmpty();        //==> true
+        deque.addFirst(2);
+        deque.removeLast();      //==> 2
+        deque.addFirst(4);
+        deque.addFirst(5);
+        deque.removeLast();      //==> 4
+        deque.removeLast();     //==> 5
+        deque.addFirst(8);
+        StdOut.print(deque.removeLast());
 
-        deque.addFirst(1);
-        deque.removeLast();
-
-        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
-        // deque.addLast(1);
-        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
-        // deque.removeFirst();     //==> 1
-        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
-        // deque.isEmpty();         //==> true
-        // deque.isEmpty();         //==> true
-        // deque.addFirst(5);
-        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
-        // deque.size();          //==> 1
-        // deque.removeLast();
-        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
-
+        // deque.addFirst(1);
+        // deque.addFirst(2);
+        // StdOut.print(deque.removeFirst());     //==> 2
+        // StdOut.print(deque.isEmpty());         //==> false
+        // StdOut.print(deque.removeLast());      //==> 1
+        // deque.addFirst(6);
+        // deque.addLast(7);
+        // deque.size();            //==> 2
+        // deque.size();            //==> 2
+        // StdOut.printf("\ndigit is:%d", deque.removeFirst());
 
         StdOut.printf("\nThe new deque is:\n");
         for (Integer item : deque) {
             StdOut.print(item + "\t");
         }
+
+        // StdOut.printf("\nThe new deque is:\n");
+        // for (Integer item : deque) {
+        //     StdOut.print(item + "\t");
+        // }
         StdOut.print("\n");
     }
 }
