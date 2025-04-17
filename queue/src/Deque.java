@@ -37,11 +37,9 @@ public class Deque<Item> implements Iterable<Item> {
     private void resize(int capacity) {
         // @SuppressWarnings("unchecked")
         Item[] newArr = (Item[]) new Object[capacity];
-        int pointer = head;
         int old_length = size();
         for (int i = 0; i < old_length; i++) {
-            newArr[i] = arr[pointer];
-            pointer = (pointer + 1) % arr.length;
+            newArr[i] = arr[(head + i) % arr.length];
         }
         arr = newArr;
         head = 0;
@@ -59,6 +57,7 @@ public class Deque<Item> implements Iterable<Item> {
         // if empty array, when an element is added, tail = head = 0
         if (isEmpty()) tail = head;
         // then shift head to the left and add new item to it
+        // StdOut.printf("Array length is: %d", arr.length);
         head = (head - 1 + arr.length) % arr.length;
         arr[head] = item;
         count++;
@@ -70,7 +69,7 @@ public class Deque<Item> implements Iterable<Item> {
             throw new IllegalArgumentException();
         }
         // if array full, resize first
-        if (count == arr.length) resize(arr.length * 2);
+        if (count > 0 && count == arr.length) resize(arr.length * 2);
         // then shift head to the left and add new item to it
         tail = (tail + 1 + arr.length) % arr.length;    // if empty array, tail will be 0 (-1+1=0)
         arr[tail] = item;
@@ -84,9 +83,10 @@ public class Deque<Item> implements Iterable<Item> {
         }
         Item item = arr[head];
         arr[head] = null;
-        head = (head + 1 + arr.length) % arr.length;
+        if (isEmpty()) head = 0;
+        else head = (head + 1 + arr.length) % arr.length;
         count--;
-        if (count <= arr.length / 4) resize(arr.length / 2);
+        if (count > 0 && count <= arr.length / 4) resize(arr.length / 2);
         return item;
     }
 
@@ -97,9 +97,10 @@ public class Deque<Item> implements Iterable<Item> {
         }
         Item item = arr[tail];
         arr[tail] = null;
-        tail = (tail - 1 + arr.length) % arr.length;
+        if (isEmpty()) tail = 0;
+        else tail = (tail - 1 + arr.length) % arr.length;
         count--;
-        if (count <= arr.length / 4) resize(arr.length / 2);
+        if (count > 0 && count <= arr.length / 4) resize(arr.length / 2);
         return item;
     }
 
@@ -135,30 +136,23 @@ public class Deque<Item> implements Iterable<Item> {
         for (Integer item : deque) {
             StdOut.print(item + "\t");
         }
-        // deque.addFirst(1);
-        // deque.addFirst(2);
-        // deque.addFirst(999);
-        // deque.addFirst(212);
-        // deque.addFirst(-2);
-        // deque.addLast(99);
-        // deque.addLast(20);
-        // deque.addLast(299);
-        // deque.addLast(-101);
-        // deque.addLast(0);
-        // deque.addLast(130);
-        // deque.addLast(78);
-        // deque.addLast(63);
+
         deque.addFirst(1);
         deque.removeLast();
 
-        // StdOut.printf("The new deque after appending is:\n");
-        // for (Integer item : deque) {
-        //     StdOut.print(item + "\t");
-        // }
+        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
+        // deque.addLast(1);
+        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
+        // deque.removeFirst();     //==> 1
+        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
+        // deque.isEmpty();         //==> true
+        // deque.isEmpty();         //==> true
+        // deque.addFirst(5);
+        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
+        // deque.size();          //==> 1
+        // deque.removeLast();
+        // StdOut.printf("Head:%d, tail:%d, count:%d\n", deque.head, deque.tail, deque.count);
 
-        // int a = deque.removeFirst();
-        // int b = deque.removeLast();
-        // StdOut.printf("\nThe first and last items deleted are: %d and %d\n", a, b);
 
         StdOut.printf("\nThe new deque is:\n");
         for (Integer item : deque) {
