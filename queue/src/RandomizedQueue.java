@@ -16,7 +16,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private int count;
 
     // construct an empty randomized queue
-    @SuppressWarnings("unchecked")
+    // @SuppressWarnings("unchecked")
     public RandomizedQueue() {
         arr = (Item[]) new Object[1];
     }
@@ -31,13 +31,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return count;
     }
 
-    public void resize(int capacity) {
-        @SuppressWarnings("unchecked")
-        Item[] new_arr = (Item[]) new Object[capacity];
+    private void resize(int capacity) {
+        // @SuppressWarnings("unchecked")
+        Item[] newArr = (Item[]) new Object[capacity];
         for (int i = 0; i < size(); i++) {
-            new_arr[i] = arr[i];
+            newArr[i] = arr[i];
         }
-        arr = new_arr;
+        arr = newArr;
     }
 
     // add the item
@@ -77,7 +77,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return new RandIterator();
     }
 
-    public class RandIterator implements Iterator<Item> {
+    private class RandIterator implements Iterator<Item> {
         private int remaining;
 
         public RandIterator() {
@@ -90,7 +90,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
 
         public Item next() {
-            return arr[--remaining];
+            --remaining;
+            if (remaining < 0) throw new NoSuchElementException();
+            return arr[remaining];
         }
 
         public void remove() {

@@ -17,7 +17,7 @@ public class Deque<Item> implements Iterable<Item> {
     private int count;
 
     // construct an empty deque
-    @SuppressWarnings("unchecked")
+    // @SuppressWarnings("unchecked")
     public Deque() {
         arr = (Item[]) new Object[1];
         head = 0;
@@ -34,17 +34,18 @@ public class Deque<Item> implements Iterable<Item> {
         return count;
     }
 
-    public void resize(int capacity) {
-        @SuppressWarnings("unchecked")
-        Item[] new_arr = (Item[]) new Object[capacity];
+    private void resize(int capacity) {
+        // @SuppressWarnings("unchecked")
+        Item[] newArr = (Item[]) new Object[capacity];
         int pointer = head;
-        for (int i = 0; i < size(); i++) {
-            new_arr[i] = arr[pointer];
+        int old_length = size();
+        for (int i = 0; i < old_length; i++) {
+            newArr[i] = arr[pointer];
             pointer = (pointer + 1) % arr.length;
         }
-        arr = new_arr;
+        arr = newArr;
         head = 0;
-        tail = size() - 1;
+        tail = old_length - 1;
     }
 
     // add the item to the front
@@ -53,7 +54,10 @@ public class Deque<Item> implements Iterable<Item> {
             throw new IllegalArgumentException();
         }
         // if array full, resize first
-        if ((tail + 1) % arr.length == head % arr.length) resize(arr.length * 2);
+        if (count == arr.length)
+            resize(arr.length * 2);
+        // if empty array, when an element is added, tail = head = 0
+        if (isEmpty()) tail = head;
         // then shift head to the left and add new item to it
         head = (head - 1 + arr.length) % arr.length;
         arr[head] = item;
@@ -66,9 +70,9 @@ public class Deque<Item> implements Iterable<Item> {
             throw new IllegalArgumentException();
         }
         // if array full, resize first
-        if ((tail + 1 + arr.length) % arr.length == head % arr.length) resize(arr.length * 2);
+        if (count == arr.length) resize(arr.length * 2);
         // then shift head to the left and add new item to it
-        tail = (tail + 1 + arr.length) % arr.length;
+        tail = (tail + 1 + arr.length) % arr.length;    // if empty array, tail will be 0 (-1+1=0)
         arr[tail] = item;
         count++;
     }
@@ -104,7 +108,7 @@ public class Deque<Item> implements Iterable<Item> {
         return new ArrayIterator();
     }
 
-    public class ArrayIterator implements Iterator<Item> {
+    private class ArrayIterator implements Iterator<Item> {
         private int i = 0;
 
         public boolean hasNext() {
@@ -112,11 +116,12 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         public Item next() {
+            if (i > count) throw new NoSuchElementException();
             return arr[(head + i++) % arr.length];
         }
 
         public void remove() {
-            throw new UnsupportedOperationException();
+            throw new NoSuchElementException();
         }
     }
 
@@ -126,23 +131,36 @@ public class Deque<Item> implements Iterable<Item> {
         while (!StdIn.isEmpty()) {
             deque.addLast(StdIn.readInt());
         }
-        deque.addFirst(1);
-        deque.addFirst(2);
-        deque.addFirst(999);
-        deque.addFirst(212);
-        deque.addFirst(-2);
-        deque.addLast(99);
-        deque.addLast(20);
-
-        StdOut.printf("The new deque after appending is:\n");
+        StdOut.printf("The initial deque is:\n");
         for (Integer item : deque) {
             StdOut.print(item + "\t");
         }
+        // deque.addFirst(1);
+        // deque.addFirst(2);
+        // deque.addFirst(999);
+        // deque.addFirst(212);
+        // deque.addFirst(-2);
+        // deque.addLast(99);
+        // deque.addLast(20);
+        // deque.addLast(299);
+        // deque.addLast(-101);
+        // deque.addLast(0);
+        // deque.addLast(130);
+        // deque.addLast(78);
+        // deque.addLast(63);
+        deque.addFirst(1);
+        deque.removeLast();
 
-        int a = deque.removeFirst();
-        int b = deque.removeLast();
-        StdOut.printf("\nThe first and last items deleted are: %d and %d\n", a, b);
-        StdOut.printf("The new deque after deletion is:\n");
+        // StdOut.printf("The new deque after appending is:\n");
+        // for (Integer item : deque) {
+        //     StdOut.print(item + "\t");
+        // }
+
+        // int a = deque.removeFirst();
+        // int b = deque.removeLast();
+        // StdOut.printf("\nThe first and last items deleted are: %d and %d\n", a, b);
+
+        StdOut.printf("\nThe new deque is:\n");
         for (Integer item : deque) {
             StdOut.print(item + "\t");
         }
