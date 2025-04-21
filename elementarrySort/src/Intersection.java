@@ -17,21 +17,12 @@ public class Intersection {
             this.y = y;
         }
 
-        // dummy function for interface implementation; not needed
+        // use this to count intersection.
+        // so if a[i] is greater than b[j], we can choose next b, b[j+1], in sorted array
+        // to see if diff will be 0
         public int compareTo(Point2D item) {
             if (this.x != item.x) return (this.x - item.x);
             else return (this.y - item.y);
-        }
-
-        public boolean equalsTo(Object item) {
-            // sometimes values may be equal but class can be different
-
-            if (item == this) return true; // if same item compared, true
-            if (item == null) return false;  // if item null, false
-            if (item.getClass() != this.getClass()) return false;  // if class not Point2D, false
-
-            Point2D that = (Point2D) item;
-            return this.x == that.x && this.y == that.y;
         }
 
         public String toString() {
