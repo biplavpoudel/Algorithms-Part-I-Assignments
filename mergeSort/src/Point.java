@@ -90,8 +90,13 @@ public class Point implements Comparable<Point> {
      * @return the Comparator that defines this ordering on points
      */
     public Comparator<Point> slopeOrder() {
-        /* YOUR CODE HERE */
-        return null;
+        return new Comparator<Point>() {
+            public int compare(Point point1, Point point2) {
+                double slope_one = slopeTo(point1);
+                double slope_two = slopeTo(point2);
+                return Double.compare(slope_one, slope_two);
+            }
+        };
     }
 
 
@@ -103,7 +108,6 @@ public class Point implements Comparable<Point> {
      * @return a string representation of this point
      */
     public String toString() {
-        /* DO NOT MODIFY */
         return "(" + x + ", " + y + ")";
     }
 
