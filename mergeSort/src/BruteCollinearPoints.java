@@ -51,11 +51,15 @@ public class BruteCollinearPoints {
         double ps = p.slopeTo(s);
 
         if (pq == pr && pq == ps) {
-            StdOut.printf("All the four points %s, %s, %s, %s are collinear.\n", p.toString(),
+            StdOut.printf("All the four points: %s, %s, %s and %s are collinear.\n", p.toString(),
                           q.toString(), r.toString(), s.toString());
             collinear.add(new LineSegment(p, s));
         }
-
+        else {
+            StdOut.printf("The provided points: %s, %s, %s and %s are not collinear!\n",
+                          p.toString(),
+                          q.toString(), r.toString(), s.toString());
+        }
     }
 
     /**
@@ -86,7 +90,7 @@ public class BruteCollinearPoints {
     public static void main(String[] args) {
         Point[] points = new Point[] {
                 new Point(2, 3),
-                new Point(2, 4),
+                new Point(4, 4),
                 new Point(2, 5),
                 new Point(2, 10),
                 };
