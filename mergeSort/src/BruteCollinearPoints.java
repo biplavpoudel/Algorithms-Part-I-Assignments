@@ -17,6 +17,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class BruteCollinearPoints {
 
@@ -25,6 +26,7 @@ public class BruteCollinearPoints {
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
         collinearLines = new ArrayList<>();
+        HashSet<String> duplicateSegments = new HashSet<>();
         int size = points.length;
 
         // Check for IllegalArgumentExceptions
@@ -49,14 +51,21 @@ public class BruteCollinearPoints {
                         Point q = points[j];
                         Point r = points[k];
                         Point s = points[l];
-                        Double slopePQ = p.slopeTo(q);
-                        Double slopePR = p.slopeTo(r);
-                        Double slopePS = p.slopeTo(s);
-                        if (slopePQ.equals(slopePR) && slopePQ.equals(slopePS)) {
-                            StdOut.printf("Collinear points found! The points are: (%s,%s,%s,%s)\n",
-                                          p.toString(), q.toString(),
-                                          r.toString(), s.toString());
-                            collinearLines.add(new LineSegment(p, s));
+
+                        if (p.slopeTo(q) == p.slopeTo(r) && p.slopeTo(q) == p.slopeTo(s)) {
+                            Point[] linePoints = { p, q, r, s };
+                            Arrays.sort(linePoints);
+                            // to remove overlapping segments with HashSet
+                            String Key = linePoints[0].toString() + " -> "
+                                    + linePoints[3].toString();
+                            if (!duplicateSegments.contains(Key)) {
+                                duplicateSegments.add(Key);
+                                StdOut.printf(
+                                        "Collinear points found! The points are: (%s,%s,%s,%s)\n",
+                                        p.toString(), q.toString(),
+                                        r.toString(), s.toString());
+                                collinearLines.add(new LineSegment(p, s));
+                            }
                         }
                     }
                 }
