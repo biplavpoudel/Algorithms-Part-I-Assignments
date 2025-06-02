@@ -20,11 +20,12 @@ import java.util.Arrays;
 
 public class BruteCollinearPoints {
 
-    private ArrayList<LineSegment> collinear;
+    private final ArrayList<LineSegment> collinearLines;
 
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
-        collinear = new ArrayList<>();
+        collinearLines = new ArrayList<>();
+        int size = points.length;
 
         // Check for IllegalArgumentExceptions
         if (points == null)
@@ -39,26 +40,27 @@ public class BruteCollinearPoints {
                 throw new IllegalArgumentException("Duplicate arguments found!");
         }
 
-        Point p = points[0];
-        Point q = points[1];
-        Point r = points[2];
-        Point s = points[3];
-
-
-        // the all four points lie in a same line segment, if their slope is same
-        double pq = p.slopeTo(q);
-        double pr = p.slopeTo(r);
-        double ps = p.slopeTo(s);
-
-        if (pq == pr && pq == ps) {
-            StdOut.printf("All the four points: %s, %s, %s and %s are collinear.\n", p.toString(),
-                          q.toString(), r.toString(), s.toString());
-            collinear.add(new LineSegment(p, s));
-        }
-        else {
-            StdOut.printf("The provided points: %s, %s, %s and %s are not collinear!\n",
-                          p.toString(),
-                          q.toString(), r.toString(), s.toString());
+        // brute-forcing all the possible set of 4 collinear points from the inputs
+        for (int i = 0; i < size - 3; i++) {
+            for (int j = i + 1; j < size - 2; j++) {
+                for (int k = j + 1; k < size - 1; k++) {
+                    for (int l = k + 1; l < size; l++) {
+                        Point p = points[i];
+                        Point q = points[j];
+                        Point r = points[k];
+                        Point s = points[l];
+                        Double slopePQ = p.slopeTo(q);
+                        Double slopePR = p.slopeTo(r);
+                        Double slopePS = p.slopeTo(s);
+                        if (slopePQ.equals(slopePR) && slopePQ.equals(slopePS)) {
+                            StdOut.printf("Collinear points found! The points are: (%s,%s,%s,%s)\n",
+                                          p.toString(), q.toString(),
+                                          r.toString(), s.toString());
+                            collinearLines.add(new LineSegment(p, s));
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -79,21 +81,34 @@ public class BruteCollinearPoints {
 
     public int numberOfSegments() {
         // finds all line segments containing 4 points
-        return collinear.size();
+        return collinearLines.size();
     }
 
     public LineSegment[] segments() {
         // the line segments
-        return collinear.toArray(new LineSegment[numberOfSegments()]);
+        return collinearLines.toArray(new LineSegment[numberOfSegments()]);
     }
 
     public static void main(String[] args) {
         Point[] points = new Point[] {
-                new Point(2, 3),
-                new Point(4, 4),
+                new Point(0, 1),
+                new Point(1, 3),
                 new Point(2, 5),
-                new Point(2, 10),
-                };
+                new Point(3, 7),
+                new Point(4, 9),
+                new Point(2, 2),
+                new Point(5, 1),
+                new Point(0, 4),
+                new Point(3, 1),
+                new Point(4, 0),
+                new Point(5, 5),
+                new Point(1, 1)
+        };
         BruteCollinearPoints coll = new BruteCollinearPoints(points);
+        StdOut.printf("The number of collinear line segments are: %d\n", coll.numberOfSegments());
+        LineSegment[] response = coll.segments();
+        for (LineSegment item : response) {
+            StdOut.printf("The collinear segments are: %s\n", item.toString());
+        }
     }
 }
