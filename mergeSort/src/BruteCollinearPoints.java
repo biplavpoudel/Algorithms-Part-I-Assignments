@@ -29,7 +29,7 @@ public class BruteCollinearPoints {
         HashSet<String> duplicateSegments = new HashSet<>();
         int size = points.length;
 
-        // Check for IllegalArgumentExceptions
+        // Check for Corner cases
         if (points == null)
             throw new IllegalArgumentException("The constructor argument is null");
         else {
