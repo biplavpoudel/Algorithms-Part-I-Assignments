@@ -28,7 +28,6 @@ public class BruteCollinearPoints {
     public BruteCollinearPoints(Point[] points) {
         collinearLines = new ArrayList<>();
         HashSet<String> duplicateSegments = new HashSet<>();
-        int size = points.length;
 
         // Check for Corner cases
         if (points == null)
@@ -42,25 +41,26 @@ public class BruteCollinearPoints {
             if (sortedDuplicateChecker(points))
                 throw new IllegalArgumentException("Duplicate arguments found!");
         }
+        int size = points.length;
 
         // brute-forcing all the possible set of 4 collinear points from the inputs
         for (int i = 0; i < size - 3; i++) {
             for (int j = i + 1; j < size - 2; j++) {
                 for (int k = j + 1; k < size - 1; k++) {
-                    for (int l = k + 1; l < size; l++) {
+                    for (int h = k + 1; h < size; h++) {
                         Point p = points[i];
                         Point q = points[j];
                         Point r = points[k];
-                        Point s = points[l];
+                        Point s = points[h];
 
                         if (p.slopeTo(q) == p.slopeTo(r) && p.slopeTo(q) == p.slopeTo(s)) {
                             Point[] linePoints = { p, q, r, s };
                             Arrays.sort(linePoints);
                             // to remove overlapping segments with HashSet
-                            String Key = linePoints[0].toString() + " -> "
+                            String key = linePoints[0].toString() + " -> "
                                     + linePoints[3].toString();
-                            if (!duplicateSegments.contains(Key)) {
-                                duplicateSegments.add(Key);
+                            if (!duplicateSegments.contains(key)) {
+                                duplicateSegments.add(key);
                                 StdOut.printf(
                                         "Collinear points found! The points are: (%s,%s,%s,%s)\n",
                                         p.toString(), q.toString(),

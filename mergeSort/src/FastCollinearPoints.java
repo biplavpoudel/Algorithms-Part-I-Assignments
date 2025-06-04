@@ -42,7 +42,6 @@ public class FastCollinearPoints {
     // finds all line segments containing 4 points
     public FastCollinearPoints(Point[] points) {
         collinearLines = new ArrayList<>();
-        int size = points.length;
 
         // Check for Corner cases
         if (points == null)
@@ -57,8 +56,8 @@ public class FastCollinearPoints {
                 throw new IllegalArgumentException("Duplicate Points found!");
         }
 
+        int size = points.length;
         // For each point p in n, lets find slope of other points wrt to p
-
         for (int i = 0; i < (size - 1); i++) {
             Point[] clonedPoints = points.clone();
             Point referencePoint = clonedPoints[i];
@@ -86,9 +85,9 @@ public class FastCollinearPoints {
             int count = 2;  // begin with count of 2 where extra 1 is for reference point
             int firstCol;  // first Collinear point in the set
             for (int j = 2; j < size; j++) {  // first slope is always -ve infinity
-                Double previousSlope = slopeArr.get(j - 1);
-                Double currSlope = slopeArr.get(j);
-                if (currSlope.compareTo(previousSlope) == 0) {
+                double previousSlope = slopeArr.get(j - 1);
+                double currSlope = slopeArr.get(j);
+                if (currSlope == previousSlope) {
                     count++;
                 }
                 else {
@@ -96,7 +95,7 @@ public class FastCollinearPoints {
                         firstCol = j - count + 1;
 
                         // DEBUG: print all collinear points (excluding reference point for debugging)
-                        addCollinearSegment(clonedPoints, firstCol, referencePoint, count, j);
+                        addCollinearSegment(clonedPoints, firstCol, referencePoint, count);
                     }
                     count = 2;  // reset count if current slope not equal to previous
                 }
@@ -108,13 +107,13 @@ public class FastCollinearPoints {
                 firstCol = size - count + 1;   // (size+1)-count to not mess index
                 // collinearLines.add(
                 //         new LineSegment(clonedPoints[size - 2], clonedPoints[size - 1]));
-                addCollinearSegment(clonedPoints, firstCol, referencePoint, count, size);
+                addCollinearSegment(clonedPoints, firstCol, referencePoint, count);
             }
         }
     }
 
     private void addCollinearSegment(Point[] clonedPoints, int firstCol, Point referencePoint,
-                                     int count, int j) {
+                                     int count) {
         // DEBUG: print all collinear points (excluding reference point for debugging)
         // StdOut.printf(
         //         "The collinear points from %s to %s excluding reference: %s with count=%d are:\n",
@@ -146,12 +145,12 @@ public class FastCollinearPoints {
 
         // to remove duplicate segments, we first create a unique key
         // I need to add reference point too.
-        String Key = keyMin.toString() + " -> "
+        String key = keyMin.toString() + " -> "
                 + keyMax.toString();
         // if hashset doesn't contain unique key,
         // add it to the hashset and to the collinear segments
-        if (!duplicateSegments.contains(Key)) {
-            duplicateSegments.add(Key);
+        if (!duplicateSegments.contains(key)) {
+            duplicateSegments.add(key);
             collinearLines.add(
                     new LineSegment(keyMin, keyMax));
         }
@@ -163,7 +162,7 @@ public class FastCollinearPoints {
      * @param items N-size array of type Point
      * @return True if duplicates present, else False
      */
-    private static <T extends Comparable<T>> boolean sortedDuplicateChecker(T[] items) {
+    private static boolean sortedDuplicateChecker(Point[] items) {
         int size = items.length;
         for (int i = 1; i < size; i++) {
             if (items[i - 1].compareTo(items[i]) == 0)
