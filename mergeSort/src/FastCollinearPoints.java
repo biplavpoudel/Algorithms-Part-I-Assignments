@@ -32,12 +32,11 @@ import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
 public class FastCollinearPoints {
 
     private final ArrayList<LineSegment> collinearLines;
-    private final HashSet<String> duplicateSegments = new HashSet<>();
+    // private final HashSet<String> duplicateSegments = new HashSet<>();
 
     // finds all line segments containing 4 points
     public FastCollinearPoints(Point[] points) {
@@ -95,7 +94,7 @@ public class FastCollinearPoints {
                         firstCol = j - count + 1;
 
                         // DEBUG: print all collinear points (excluding reference point for debugging)
-                        addCollinearSegment(clonedPoints, firstCol, referencePoint, count);
+                        addCollinearSegment(clonedPoints, firstCol, referencePoint, count, j);
                     }
                     count = 2;  // reset count if current slope not equal to previous
                 }
@@ -107,14 +106,15 @@ public class FastCollinearPoints {
                 firstCol = size - count + 1;   // (size+1)-count to not mess index
                 // collinearLines.add(
                 //         new LineSegment(clonedPoints[size - 2], clonedPoints[size - 1]));
-                addCollinearSegment(clonedPoints, firstCol, referencePoint, count);
+                addCollinearSegment(clonedPoints, firstCol, referencePoint, count, size);
             }
         }
     }
 
     private void addCollinearSegment(Point[] clonedPoints, int firstCol, Point referencePoint,
-                                     int count) {
+                                     int count, int j) {
         // DEBUG: print all collinear points (excluding reference point for debugging)
+
         // StdOut.printf(
         //         "The collinear points from %s to %s excluding reference: %s with count=%d are:\n",
         //         clonedPoints[firstCol].toString(),
@@ -126,34 +126,46 @@ public class FastCollinearPoints {
         // StdOut.printf("\n");
 
         // Let's create a hash with min-max points (including reference points)
-        Point[] colSegement = new Point[count];
+        Point[] colSegment = new Point[count];
         // first item is the reference point itself
-        colSegement[0] = referencePoint;
+        colSegment[0] = referencePoint;
 
         for (int k = 0; k < (count - 1); k++) {
-            colSegement[k + 1] = clonedPoints[firstCol + k];
+            colSegment[k + 1] = clonedPoints[firstCol + k];
         }
-        Point keyMax = colSegement[0];
-        Point keyMin = colSegement[0];
 
-        for (Point p : colSegement) {
-            if (p.compareTo(keyMax) > 0) keyMax = p;
-            if (p.compareTo(keyMin) < 0) keyMin = p;
+        Arrays.sort(colSegment);
+        Point keyMax = colSegment[count - 1];
+        Point keyMin = colSegment[0];
+
+        // StdOut.printf("\nThe sorted colSegment is:\n");
+        // for (Point colPoints : colSegment)
+        //     StdOut.print(colPoints);
+        // StdOut.printf("\n\n");
+        LineSegment newCollinear = new LineSegment(keyMin, keyMax);
+        boolean duplicateSegment = false;
+        for (LineSegment items : collinearLines) {
+            if (items.toString().equals(newCollinear.toString())) {
+                duplicateSegment = true;
+                break;
+            }
         }
+        if (!duplicateSegment) collinearLines.add(newCollinear);
+
         // StdOut.printf("\nThe min is: %s and max is: %s\n\n", keyMin.toString(),
         //               keyMax.toString());
 
         // to remove duplicate segments, we first create a unique key
         // I need to add reference point too.
-        String key = keyMin.toString() + " -> "
-                + keyMax.toString();
+        // String key = keyMin.toString() + " -> "
+        //         + keyMax.toString();
         // if hashset doesn't contain unique key,
         // add it to the hashset and to the collinear segments
-        if (!duplicateSegments.contains(key)) {
-            duplicateSegments.add(key);
-            collinearLines.add(
-                    new LineSegment(keyMin, keyMax));
-        }
+        // if (!duplicateSegments.contains(key)) {
+        //     duplicateSegments.add(key);
+        //     collinearLines.add(
+        //             new LineSegment(keyMin, keyMax));
+        // }
     }
 
     /**

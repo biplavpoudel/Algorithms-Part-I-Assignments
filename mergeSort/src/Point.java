@@ -119,7 +119,7 @@ public class Point implements Comparable<Point> {
         Point point0 = new Point(2, 3);
         point0.draw();
         point0.drawTo(new Point(12, 20));
-        StdOut.printf("The slope of line segement (%d, %d) to (%d, %d) is: %f", 2, 3, 4, 3,
+        StdOut.printf("The slope of line segement (%d, %d) to (%d, %d) is: %f\n", 2, 3, 4, 3,
                       point0.slopeTo(new Point(4, 3)));
     }
 }
