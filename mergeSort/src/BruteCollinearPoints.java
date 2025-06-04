@@ -13,6 +13,7 @@
  * and between p and s are all equal.
  */
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
@@ -99,22 +100,31 @@ public class BruteCollinearPoints {
     }
 
     public static void main(String[] args) {
-        Point[] points = new Point[] {
-                new Point(0, 1),
-                new Point(1, 3),
-                new Point(2, 5),
-                new Point(3, 7),
-                new Point(4, 9),
-                new Point(2, 2),
-                new Point(5, 1),
-                new Point(0, 4),
-                new Point(3, 1),
-                new Point(4, 0),
-                new Point(5, 5),
-                new Point(1, 1)
-        };
+        // Point[] points = new Point[] {
+        //         new Point(0, 1),
+        //         new Point(1, 3),
+        //         new Point(2, 5),
+        //         new Point(3, 7),
+        //         new Point(4, 9),
+        //         new Point(2, 2),
+        //         new Point(5, 1),
+        //         new Point(0, 4),
+        //         new Point(3, 1),
+        //         new Point(4, 0),
+        //         new Point(5, 5),
+        //         new Point(1, 1)
+        // };
+        // read the n points from a file
+        In in = new In(args[0]);
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
         BruteCollinearPoints coll = new BruteCollinearPoints(points);
-        StdOut.printf("The number of collinear line segments are: %d\n", coll.numberOfSegments());
+        // StdOut.printf("The number of collinear line segments are: %d\n", coll.numberOfSegments());
         LineSegment[] response = coll.segments();
         for (LineSegment item : response) {
             StdOut.printf("The collinear segments are: %s\n", item.toString());
