@@ -153,28 +153,6 @@ public class FastCollinearPoints {
             segment.draw();
         }
         StdDraw.show();
-
-
-        // Point[] points = new Point[] {
-        //         new Point(0, 1),
-        //         new Point(1, 3),
-        //         new Point(2, 5),
-        //         new Point(3, 7),
-        //         new Point(4, 9),
-        //         new Point(2, 2),
-        //         new Point(5, 1),
-        //         new Point(0, 4),
-        //         new Point(3, 1),
-        //         new Point(4, 0),
-        //         new Point(5, 5),
-        //         new Point(1, 1)
-        // };
-        // FastCollinearPoints coll = new FastCollinearPoints(points);
-        // StdOut.printf("The number of collinear line segments are: %d\n", coll.numberOfSegments());
-        // LineSegment[] response = coll.segments();
-        // for (LineSegment item : response) {
-        //     StdOut.printf("The collinear segments are: %s\n", item.toString());
-        // }
     }
 }
 
