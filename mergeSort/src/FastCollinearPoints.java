@@ -66,9 +66,9 @@ public class FastCollinearPoints {
             Point referencePoint = copy[i];
 
             // Points have been sorted according to the slope they make it reference point
-            Point[] sortedBySlope = new Point[points.length - 1];
+            Point[] sortedBySlope = new Point[copy.length - 1];
             int idx = 0;
-            for (int j = 0; j < points.length; j++) {
+            for (int j = 0; j < copy.length; j++) {
                 if (j != i) {
                     sortedBySlope[idx++] = copy[j];
                 }
