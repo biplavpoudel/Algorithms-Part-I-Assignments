@@ -70,7 +70,7 @@ public class FastCollinearPoints {
             int idx = 0;
             for (int j = 0; j < points.length; j++) {
                 if (j != i) {
-                    sortedBySlope[idx++] = points[j];
+                    sortedBySlope[idx++] = copy[j];
                 }
             }
             Arrays.sort(sortedBySlope, referencePoint.slopeOrder());
@@ -126,7 +126,6 @@ public class FastCollinearPoints {
         }
         for (Point[] group : collinearLinesGroup) {
             // StdOut.printf("\n\n\nThe collinear line group is: %s\n", items.getString());
-            Arrays.sort(group);
             Point min = group[0];
             Point max = group[group.length - 1];
             collinearLines.add(new LineSegment(min, max));
@@ -150,7 +149,7 @@ public class FastCollinearPoints {
             return;
         }
         for (Point[] currItem : collinearLinesGroup) {
-
+            Arrays.sort(currItem);
             Point currMax = currItem[currItem.length - 1];
             Point currMin = currItem[0];
             double currSlope = currMin.slopeTo(currMax);
