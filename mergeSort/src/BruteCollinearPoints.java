@@ -54,7 +54,7 @@ public class BruteCollinearPoints {
                         Point s = points[h];
 
                         if (p.slopeTo(q) == p.slopeTo(r) && p.slopeTo(q) == p.slopeTo(s)) {
-                            Point[] linePoints = { p, q, r, s };
+                            // Point[] linePoints = { p, q, r, s };
                             // Arrays.sort(linePoints);
                             collinearLines.add(new LineSegment(p, s));
                         }

@@ -36,8 +36,7 @@ import java.util.Arrays;
 public class FastCollinearPoints {
 
     private final ArrayList<LineSegment> collinearLines;
-    // to add {min, max} array of collinear Points
-    private final ArrayList<Pair> collinearLinesGroup;
+    private final ArrayList<Point[]> collinearLinesGroup;
 
     // finds all line segments containing 4 points
     public FastCollinearPoints(Point[] points) {
@@ -47,22 +46,24 @@ public class FastCollinearPoints {
         // Check for Corner cases
         if (points == null)
             throw new IllegalArgumentException("The constructor argument is null");
-        else {
-            for (Point item : points) {
-                if (item == null)
-                    throw new IllegalArgumentException("A null Point is passed to the constructor");
-            }
-            Arrays.sort(points);
-            if (sortedDuplicateChecker(points))
-                throw new IllegalArgumentException("Duplicate Points found!");
-        }
 
-        int size = points.length;
+        Point[] copy = new Point[points.length];
+        for (int i = 0; i < points.length; i++) {
+            if (points[i] == null)
+                throw new IllegalArgumentException("A null Point is passed to the constructor");
+            copy[i] = points[i];
+        }
+        Arrays.sort(copy);
+        if (sortedDuplicateChecker(copy))
+            throw new IllegalArgumentException("Duplicate Points found!");
+
+        if (copy.length < 4) return;
+
+        int size = copy.length;
         // For each point p in n, lets find slope of other points wrt to p
         for (int i = 0; i < size; i++) {
             // StdOut.printf("\n\n\ni == %d", i);
-            Point referencePoint = points[i];
-            ArrayList<Double> slopeArr = new ArrayList<>();
+            Point referencePoint = copy[i];
 
             // Points have been sorted according to the slope they make it reference point
             Point[] sortedBySlope = new Point[points.length - 1];
@@ -74,32 +75,32 @@ public class FastCollinearPoints {
             }
             Arrays.sort(sortedBySlope, referencePoint.slopeOrder());
 
-            // StdOut.printf("\nThe sorted points based on %s are: \n", referencePoint);
-            // for (Point items : sortedBySlope) {
-            //     StdOut.printf("%s ", items);
-            // }
-
-
-            // The slopes of each sorted points is added to an array
-            // StdOut.printf("\nThe slope of sorted points based on %s is: \n", referencePoint);
-            for (Point items : sortedBySlope) {
-                // StdOut.printf("%f ", referencePoint.slopeTo(items));
-                slopeArr.add(referencePoint.slopeTo(items));
-            }
-
             // now to compare adjacent slopes for collinearity
-            double prevSlope = referencePoint.slopeTo(sortedBySlope[0]);
             int count = 1;
+            double prevSlope = referencePoint.slopeTo(sortedBySlope[0]);
             int firstCol;  // first Collinear point in the set
+
             for (int j = 1; j < sortedBySlope.length; j++) {
-                double currSlope = slopeArr.get(j);
+                double currSlope = referencePoint.slopeTo(sortedBySlope[j]);
+
                 if (Double.compare(currSlope, prevSlope) == 0) {
                     count++;
                 }
                 else {
                     if (count >= 3) {
                         firstCol = j - count;
-                        addCollinearSegment(sortedBySlope, firstCol, referencePoint, count);
+
+                        // reference + coll points
+                        Point[] group = new Point[count + 1];
+                        group[0] = referencePoint;
+                        for (int k = 0; k < count; k++) {
+                            group[k + 1] = sortedBySlope[firstCol + k];
+                        }
+                        Arrays.sort(group);
+
+                        if (referencePoint.compareTo(group[0]) == 0) {
+                            collinearChecker(group);
+                        }
                     }
                     count = 1;  // reset count if current slope not equal to previous
                     prevSlope = currSlope;
@@ -110,43 +111,36 @@ public class FastCollinearPoints {
             // So we need to add the final group at the end if count >= 3.
             if (count >= 3) {
                 firstCol = sortedBySlope.length - count;
-                addCollinearSegment(sortedBySlope, firstCol, referencePoint, count);
+                // reference + coll points
+                Point[] group = new Point[count + 1];
+                group[0] = referencePoint;
+                for (int k = 0; k < count; k++) {
+                    group[k + 1] = sortedBySlope[firstCol + k];
+                }
+                Arrays.sort(group);
+
+                if (referencePoint.compareTo(group[0]) == 0) {
+                    collinearChecker(group);
+                }
             }
         }
-    }
-
-    private void addCollinearSegment(Point[] Points, int firstCol, Point refPoint, int count) {
-        Point[] colSegment = new Point[count + 1];
-        // first item is the reference point itself
-        colSegment[0] = refPoint;
-
-        for (int k = 0; k < count; k++) {
-            colSegment[k + 1] = Points[firstCol + k];
+        for (Point[] group : collinearLinesGroup) {
+            // StdOut.printf("\n\n\nThe collinear line group is: %s\n", items.getString());
+            Arrays.sort(group);
+            Point min = group[0];
+            Point max = group[group.length - 1];
+            collinearLines.add(new LineSegment(min, max));
         }
-
-        // TESTING: this slope is the slope of the collinear points
-        double groupSlope = colSegment[1].slopeTo(colSegment[2]);
-
-        Arrays.sort(colSegment);
-
-        if (refPoint.compareTo(colSegment[0]) != 0) return;
-
-        // referencePoint is the smallest; safe to check it.
-        Pair currOG = new Pair(colSegment, groupSlope);
-        collinearChecker(currOG);
     }
 
-    private void collinearChecker(Pair currOG) {
-        Point keyMin = currOG.getGroup()[0];
-        Point keyMax = currOG.getGroup()[currOG.getSize() - 1];
-        double pairsSlope = currOG.getSlope();
+    private void collinearChecker(Point[] currOG) {
+        Point keyMin = currOG[0];
+        Point keyMax = currOG[currOG.length - 1];
+        double pairsSlope = keyMin.slopeTo(keyMax);
 
-        // StdOut.printf("\nThe current group to be compared is: %s with slope: %f\n",
-        //               currOG.getString(), pairsSlope);
-
-        ArrayList<Pair> toAdd = new ArrayList<>();
-        ArrayList<Pair> toRemove = new ArrayList<>();
-        boolean duplicate = false;
+        ArrayList<Point[]> toAdd = new ArrayList<>();
+        ArrayList<Point[]> toRemove = new ArrayList<>();
+        boolean isDuplicate = false;
         boolean overlapped = false;
 
         if (collinearLinesGroup.isEmpty()) {
@@ -155,16 +149,11 @@ public class FastCollinearPoints {
             collinearLinesGroup.add(currOG);
             return;
         }
-        for (Pair currItem : collinearLinesGroup) {
-            // StdOut.printf(
-            //         "DEBUG: The collinearLinesGroup item is %s with slope %f \n",
-            //         currItem.getString(),
-            //         currItem.getSlope()
-            // );
+        for (Point[] currItem : collinearLinesGroup) {
 
-            Point currMax = currItem.getGroup()[currItem.getSize() - 1];
-            Point currMin = currItem.getGroup()[0];
-            double currSlope = currItem.getSlope();
+            Point currMax = currItem[currItem.length - 1];
+            Point currMin = currItem[0];
+            double currSlope = currMin.slopeTo(currMax);
 
             // if unequal slope, get next pairs for comparison
             if (Double.compare(pairsSlope, currSlope) != 0) {
@@ -179,13 +168,13 @@ public class FastCollinearPoints {
                     && keyMax.compareTo(currMax) == 0) {
                 // StdOut.printf(
                 //         "Duplicate found! Item not added to the collinearLinesGroup\n\n");
-                duplicate = true;
+                isDuplicate = true;
                 break;
             }
-            // StdOut.printf("Not duplicate, same slope. Checking if segement overlaps.");
+            // StdOut.printf("Not duplicate, same slope. Checking if segment overlaps.");
             int shared = 0;
-            for (Point p1 : currOG.getGroup()) {
-                for (Point p2 : currItem.getGroup()) {
+            for (Point p1 : currOG) {
+                for (Point p2 : currItem) {
                     if (p1.compareTo(p2) == 0) {
                         // StdOut.printf(
                         //         "Overlapping point found: %s. The lines are collinear.\n",
@@ -197,16 +186,16 @@ public class FastCollinearPoints {
             }
             if (shared >= 2) {
                 overlapped = true;
-                // StdOut.printf("The lines are coninciding.");
+                // StdOut.printf("The lines are coinciding.");
                 // let's find the maximal
                 Point[] maximal = { keyMin, keyMax, currMin, currMax };
                 Arrays.sort(maximal);
                 // new pair object is:
-                toAdd.add(new Pair(new Point[] { maximal[0], maximal[3] }, currSlope));
+                toAdd.add(new Point[] { maximal[0], maximal[3] });
                 toRemove.add(currItem);
             }
         }
-        if (duplicate) return;
+        if (isDuplicate) return;
 
         if (overlapped) {
             collinearLinesGroup.addAll(toAdd);
@@ -216,7 +205,6 @@ public class FastCollinearPoints {
             // Neither overlap not duplicate
             collinearLinesGroup.add(currOG);
         }
-
     }
 
     /**
@@ -236,54 +224,12 @@ public class FastCollinearPoints {
 
     public int numberOfSegments() {
         // finds all line segments containing 4 points
-        return collinearLinesGroup.size();
+        return collinearLines.size();
     }
 
     public LineSegment[] segments() {
         // the line segments
-        for (Pair items : collinearLinesGroup) {
-            // StdOut.printf("\n\n\nThe collinear line group is: %s\n", items.getString());
-            Point[] group = items.getGroup();
-            Arrays.sort(group);
-            Point min = group[0];
-            Point max = group[items.getSize() - 1];
-            collinearLines.add(new LineSegment(min, max));
-        }
-        return collinearLines.toArray(new LineSegment[numberOfSegments()]);
-    }
-
-    private class Pair {
-        private Point[] group;
-        private double slope;
-        private ArrayList<Point> points;
-
-        public Pair(Point[] group, double slope) {
-            this.group = group;
-            this.slope = slope;
-        }
-
-        public int getSize() {
-            return group.length;
-        }
-
-        public Point[] getGroup() {
-            return group;
-        }
-
-        public ArrayList<Point> getArray() {
-            if (points == null)  // to avoid null-pointer error
-                // to prevent duplication each time getArray() is called
-                points = new ArrayList<>(Arrays.asList(group));
-            return points;
-        }
-
-        public String getString() {
-            return Arrays.toString(group);
-        }
-
-        public double getSlope() {
-            return slope;
-        }
+        return collinearLines.toArray(new LineSegment[0]);
     }
 
     public static void main(String[] args) {
