@@ -7,6 +7,7 @@
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class Point implements Comparable<Point> {
@@ -116,10 +117,13 @@ public class Point implements Comparable<Point> {
      * Unit tests the Point data type.
      */
     public static void main(String[] args) {
-        Point point0 = new Point(2, 3);
-        point0.draw();
-        point0.drawTo(new Point(12, 20));
-        StdOut.printf("The slope of line segement (%d, %d) to (%d, %d) is: %f\n", 2, 3, 4, 3,
-                      point0.slopeTo(new Point(4, 3)));
+        // Point point0 = new Point(2, 3);
+        // point0.draw();
+        // point0.drawTo(new Point(12, 20));
+        // StdOut.printf("The slope of line segement (%d, %d) to (%d, %d) is: %f\n", 2, 3, 4, 3,
+        //               point0.slopeTo(new Point(4, 3)));
+        Point[] points = { new Point(2, 3), new Point(4, 5) };
+        StdOut.println(Arrays.toString(points));
+
     }
 }

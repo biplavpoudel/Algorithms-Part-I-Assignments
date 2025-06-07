@@ -14,6 +14,7 @@
  */
 
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
@@ -56,18 +57,6 @@ public class BruteCollinearPoints {
                             Point[] linePoints = { p, q, r, s };
                             // Arrays.sort(linePoints);
                             collinearLines.add(new LineSegment(p, s));
-
-                            // // to remove overlapping segments with HashSet
-                            // String key = linePoints[0].toString() + " -> "
-                            //         + linePoints[3].toString();
-                            // if (!duplicateSegments.contains(key)) {
-                            //     duplicateSegments.add(key);
-                            //     StdOut.printf(
-                            //             "Collinear points found! The points are: (%s,%s,%s,%s)\n",
-                            //             p.toString(), q.toString(),
-                            //             r.toString(), s.toString());
-                            //     collinearLines.add(new LineSegment(p, s));
-                            // }
                         }
                     }
                 }
@@ -124,11 +113,21 @@ public class BruteCollinearPoints {
             int y = in.readInt();
             points[i] = new Point(x, y);
         }
+        // draw the points
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
+        for (Point p : points) {
+            p.draw();
+        }
+        StdDraw.show();
         BruteCollinearPoints coll = new BruteCollinearPoints(points);
         // StdOut.printf("The number of collinear line segments are: %d\n", coll.numberOfSegments());
         LineSegment[] response = coll.segments();
         for (LineSegment item : response) {
-            StdOut.printf("The collinear segments are: %s\n", item.toString());
+            StdOut.println(item);
+            item.draw();
         }
+        StdDraw.show();
     }
 }
