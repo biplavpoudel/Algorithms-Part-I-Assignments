@@ -99,7 +99,8 @@ public class FastCollinearPoints {
                         Arrays.sort(group);
 
                         if (referencePoint.compareTo(group[0]) == 0) {
-                            collinearChecker(group);
+                            // collinearChecker(group);
+                            collinearLinesGroup.add(group);
                         }
                     }
                     count = 1;  // reset count if current slope not equal to previous
@@ -120,7 +121,8 @@ public class FastCollinearPoints {
                 Arrays.sort(group);
 
                 if (referencePoint.compareTo(group[0]) == 0) {
-                    collinearChecker(group);
+                    // collinearChecker(group);
+                    collinearLinesGroup.add(group);
                 }
             }
         }
@@ -132,79 +134,79 @@ public class FastCollinearPoints {
         }
     }
 
-    private void collinearChecker(Point[] currOG) {
-        Point keyMin = currOG[0];
-        Point keyMax = currOG[currOG.length - 1];
-        double pairsSlope = keyMin.slopeTo(keyMax);
-
-        ArrayList<Point[]> toAdd = new ArrayList<>();
-        ArrayList<Point[]> toRemove = new ArrayList<>();
-        boolean isDuplicate = false;
-        boolean overlapped = false;
-
-        if (collinearLinesGroup.isEmpty()) {
-            // StdOut.printf(
-            //         "\nThe collinearLinesGroup is Empty. Adding to the collinearLinesGroup.\n");
-            collinearLinesGroup.add(currOG);
-            return;
-        }
-        for (Point[] currItem : collinearLinesGroup) {
-            Arrays.sort(currItem);
-            Point currMax = currItem[currItem.length - 1];
-            Point currMin = currItem[0];
-            double currSlope = currMin.slopeTo(currMax);
-
-            // if unequal slope, get next pairs for comparison
-            if (Double.compare(pairsSlope, currSlope) != 0) {
-                // StdOut.printf(
-                //         "Slopes are unequal. Comparing with another collinearLinesPairs if present.\n");
-                continue;
-            }
-
-            // StdOut.printf("Slopes are equal. Checking for exact duplicity.\n");
-            if (Double.compare(pairsSlope, currSlope) == 0
-                    && keyMin.compareTo(currMin) == 0
-                    && keyMax.compareTo(currMax) == 0) {
-                // StdOut.printf(
-                //         "Duplicate found! Item not added to the collinearLinesGroup\n\n");
-                isDuplicate = true;
-                break;
-            }
-            // StdOut.printf("Not duplicate, same slope. Checking if segment overlaps.");
-            int shared = 0;
-            for (Point p1 : currOG) {
-                for (Point p2 : currItem) {
-                    if (p1.compareTo(p2) == 0) {
-                        // StdOut.printf(
-                        //         "Overlapping point found: %s. The lines are collinear.\n",
-                        //         p2);
-                        shared++;
-                        break;
-                    }
-                }
-            }
-            if (shared >= 2) {
-                overlapped = true;
-                // StdOut.printf("The lines are coinciding.");
-                // let's find the maximal
-                Point[] maximal = { keyMin, keyMax, currMin, currMax };
-                Arrays.sort(maximal);
-                // new pair object is:
-                toAdd.add(new Point[] { maximal[0], maximal[3] });
-                toRemove.add(currItem);
-            }
-        }
-        if (isDuplicate) return;
-
-        if (overlapped) {
-            collinearLinesGroup.addAll(toAdd);
-            collinearLinesGroup.removeAll(toRemove);
-        }
-        else {
-            // Neither overlap not duplicate
-            collinearLinesGroup.add(currOG);
-        }
-    }
+    // private void collinearChecker(Point[] currOG) {
+    //     Point keyMin = currOG[0];
+    //     Point keyMax = currOG[currOG.length - 1];
+    //     double pairsSlope = keyMin.slopeTo(keyMax);
+    //
+    //     ArrayList<Point[]> toAdd = new ArrayList<>();
+    //     ArrayList<Point[]> toRemove = new ArrayList<>();
+    //     boolean isDuplicate = false;
+    //     boolean overlapped = false;
+    //
+    //     if (collinearLinesGroup.isEmpty()) {
+    //         // StdOut.printf(
+    //         //         "\nThe collinearLinesGroup is Empty. Adding to the collinearLinesGroup.\n");
+    //         collinearLinesGroup.add(currOG);
+    //         return;
+    //     }
+    //     for (Point[] currItem : collinearLinesGroup) {
+    //         Arrays.sort(currItem);
+    //         Point currMax = currItem[currItem.length - 1];
+    //         Point currMin = currItem[0];
+    //         double currSlope = currMin.slopeTo(currMax);
+    //
+    //         // if unequal slope, get next pairs for comparison
+    //         if (Double.compare(pairsSlope, currSlope) != 0) {
+    //             // StdOut.printf(
+    //             //         "Slopes are unequal. Comparing with another collinearLinesPairs if present.\n");
+    //             continue;
+    //         }
+    //
+    //         // StdOut.printf("Slopes are equal. Checking for exact duplicity.\n");
+    //         if (Double.compare(pairsSlope, currSlope) == 0
+    //                 && keyMin.compareTo(currMin) == 0
+    //                 && keyMax.compareTo(currMax) == 0) {
+    //             // StdOut.printf(
+    //             //         "Duplicate found! Item not added to the collinearLinesGroup\n\n");
+    //             isDuplicate = true;
+    //             break;
+    //         }
+    //         // StdOut.printf("Not duplicate, same slope. Checking if segment overlaps.");
+    //         int shared = 0;
+    //         for (Point p1 : currOG) {
+    //             for (Point p2 : currItem) {
+    //                 if (p1.compareTo(p2) == 0) {
+    //                     // StdOut.printf(
+    //                     //         "Overlapping point found: %s. The lines are collinear.\n",
+    //                     //         p2);
+    //                     shared++;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //         if (shared >= 2) {
+    //             overlapped = true;
+    //             // StdOut.printf("The lines are coinciding.");
+    //             // let's find the maximal
+    //             Point[] maximal = { keyMin, keyMax, currMin, currMax };
+    //             Arrays.sort(maximal);
+    //             // new pair object is:
+    //             toAdd.add(new Point[] { maximal[0], maximal[3] });
+    //             toRemove.add(currItem);
+    //         }
+    //     }
+    //     if (isDuplicate) return;
+    //
+    //     if (overlapped) {
+    //         collinearLinesGroup.addAll(toAdd);
+    //         collinearLinesGroup.removeAll(toRemove);
+    //     }
+    //     else {
+    //         // Neither overlap not duplicate
+    //         collinearLinesGroup.add(currOG);
+    //     }
+    // }
 
     /**
      * Checks if the sorted array has duplicates by adjacent checking.
