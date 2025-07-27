@@ -6,8 +6,10 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -143,7 +145,7 @@ public class Board {
         return new Iterable<Board>() {
 
             // Depending on location of blank space, number of neighbors can be 2,3 or 4
-            List<Board> neighbors = new ArrayList<>();
+            private List<Board> neighbors = new ArrayList<>();
 
             // creating neighbors using standalone code block
             {
@@ -156,10 +158,11 @@ public class Board {
                 for (int[] directions : neighborsDirections) {
                     int newRow = blankX + directions[0];
                     int newCol = blankY + directions[1];
-                    int[][] copytiles = Board.this.tiles;
+                    int[][] copyTiles = copyTiles();
 
                     if (newRow >= 0 && newCol >= 0 && newRow < size && newCol < size) {
-                        neighbors.add(new Board(swapTiles(copytiles, newRow, newCol)));
+                        neighbors.add(
+                                new Board(swapTiles(copyTiles, blankX, blankY, newRow, newCol)));
                     }
                 }
             }
@@ -170,9 +173,36 @@ public class Board {
         };
     }
 
-    private int[][] swapTiles(int[][] arr, int newRow, int newCol) {
+    // a board that is obtained by exchanging any pair of tiles
+    public Board twin() {
+        // Use StdRandom to generate random indices
+        int n = dimension();
+        int[][] copy = copyTiles();
+        int i = StdRandom.uniformInt(n);
+        int j = StdRandom.uniformInt(n);
+        int p, q;
+        do {
+            p = StdRandom.uniformInt(n);
+            q = StdRandom.uniformInt(n);
+        } while (p == i && q == j);
+
+        // now swapping two random, unequal tiles
+        return new Board(swapTiles(copy, i, j, p, q));
+    }
+
+    private int[][] copyTiles() {
+        // copies original tile for other operations like swapping
+        int size = dimension();
+        int[][] copy = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            copy[i] = Arrays.copyOf(this.tiles[i], dimension());
+        }
+        return copy;
+    }
+
+    private int[][] swapTiles(int[][] arr, int blankRow, int blankCol, int newRow, int newCol) {
         int temp = arr[newRow][newCol];
-        arr[newRow][newCol] = arr[blankX][blankY];
+        arr[newRow][newCol] = arr[blankRow][blankCol];
         arr[blankX][blankY] = temp;
         return arr;
     }
@@ -189,11 +219,6 @@ public class Board {
                 }
             }
         }
-    }
-
-    // a board that is obtained by exchanging any pair of tiles
-    public Board twin() {
-        return null;
     }
 
     private static Board readBoard(In in) {
@@ -221,12 +246,14 @@ public class Board {
             StdOut.print("\nThe original board is: \n");
             StdOut.print(board);
             // StdOut.printf("\nThe number of wrongly placed tiles is: %d\n", board.hamming());
-            // StdOut.printf("\nThe Manhatten sum is: %d\n", board.manhattan());
+            // StdOut.printf("\nThe Manhattan sum is: %d\n", board.manhattan());
             // StdOut.printf("Is Goal?: %b\n", board.isGoal());
             StdOut.print("\nThe neighbors are: \n");
             for (Board neighbor : board.neighbors()) {
                 System.out.println(neighbor);
             }
+            StdOut.print("\n A twin board is:\n");
+            StdOut.print(board.twin());
 
         }
         else if (args.length == 2) {
