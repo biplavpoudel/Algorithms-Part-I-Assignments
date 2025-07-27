@@ -203,7 +203,7 @@ public class Board {
     private int[][] swapTiles(int[][] arr, int blankRow, int blankCol, int newRow, int newCol) {
         int temp = arr[newRow][newCol];
         arr[newRow][newCol] = arr[blankRow][blankCol];
-        arr[blankX][blankY] = temp;
+        arr[blankRow][blankCol] = temp;
         return arr;
     }
 
