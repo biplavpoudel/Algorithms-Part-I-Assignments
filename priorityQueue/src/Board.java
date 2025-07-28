@@ -173,18 +173,24 @@ public class Board {
         };
     }
 
-    // a board that is obtained by exchanging any pair of tiles
+    // a board that is obtained by exchanging any pair of tiles (excluding blanks)
     public Board twin() {
         // Use StdRandom to generate random indices
         int n = dimension();
         int[][] copy = copyTiles();
-        int i = StdRandom.uniformInt(n);
-        int j = StdRandom.uniformInt(n);
-        int p, q;
+        int i, j, p, q;
+        /*
+        Ensures the indices are set only when all three conditions are false:
+            1. Row and Column are same (i.e. same tiles)
+            2. copy[i][j] is blank
+            3. copy[p][q] is blank
+         */
         do {
+            i = StdRandom.uniformInt(n);
+            j = StdRandom.uniformInt(n);
             p = StdRandom.uniformInt(n);
             q = StdRandom.uniformInt(n);
-        } while (p == i && q == j);
+        } while ((p == i && q == j) || copy[i][j] == 0 || copy[p][q] == 0);
 
         // now swapping two random, unequal tiles
         return new Board(swapTiles(copy, i, j, p, q));
