@@ -9,31 +9,68 @@ import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
-
+    private SearchNode searchNode;
+    private SearchNode twinNode;
+    private boolean isSolvable;
 
     // find a solution to the initial board (using the A* algorithm)
     // using Manhattan Priority function
     public Solver(Board initial) {
-        MinPQ<SearchNode> queue = new MinPQ<>();
-        // if moves = 0, priority = manhattan + moves = manhattan
-        queue.insert(new SearchNode(initial, null, 0, initial.manhattan()));
+        if (initial == null) throw new IllegalArgumentException("The board initial is empty!");
 
         /*To find out if the initial board is solvable or not,
         we take a twin and solve it side-by-side with the initial board
         only one will be solvable.*/
-        MinPQ<SearchNode> twinQueue = new MinPQ<>();
         Board twin = initial.twin();
-        twinQueue.insert(new SearchNode(twin, null, 0, twin.manhattan()));
+
+        MinPQ<SearchNode> queue = new MinPQ<>();
+        // if moves = 0, priority = manhattan + moves = manhattan
+        queue.insert(new SearchNode(initial, null, 0));
+
+        MinPQ<SearchNode> twinQueue = new MinPQ<>();
+        twinQueue.insert(new SearchNode(twin, null, 0));
+
+        // Removing the initial Node to add neighbors
+        searchNode = queue.delMin();
+        twinNode = twinQueue.delMin();
+
+        // checking if the initialNode is the goal Node
+        isSolvable = searchNode.currentBoard.isGoal();
+
+        // Solving initial and twin to find out which one will lead to solution
+        while (!isSolvable) {
+            if (twinNode.currentBoard.isGoal())
+                break; // if true, proves initial board is not solvable
+
+            for (Board board : searchNode.currentBoard.neighbors()) {
+                // critical optimization for disallowing already explored searchNodes
+                if (board.equals(searchNode.previousNode.currentBoard)) continue;
+                queue.insert(new SearchNode(board, searchNode, searchNode.currentCost + 1));
+            }
+            searchNode = queue.delMin();
+
+            for (Board board : twinNode.currentBoard.neighbors()) {
+                // critical optimization for disallowing already explored searchNodes
+                if (board.equals(twinNode.previousNode.currentBoard)) continue;
+                queue.insert(new SearchNode(board, twinNode, twinNode.currentCost + 1));
+            }
+            twinNode = twinQueue.delMin();
+            // Checking if the new searchNode (child) is the goal
+            isSolvable = searchNode.currentBoard.isGoal();
+        }
+        // If not solvable, setting searchNode to be null
+        if (!isSolvable) searchNode = null;
     }
 
     // is the initial board solvable?
     public boolean isSolvable() {
-        return false;
+        return isSolvable;
     }
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        return 0;
+        if (!isSolvable) return -1;
+        return searchNode.currentCost;
     }
 
     // sequence of boards in the shortest solution; null if unsolvable
@@ -41,17 +78,18 @@ public class Solver {
         return null;
     }
 
-    private static class SearchNode implements Comparable<SearchNode> {
+    private class SearchNode implements Comparable<SearchNode> {
         private Board currentBoard;
-        private SearchNode previousBoard;
+        private SearchNode previousNode;
         private int currentCost;
         private int manhattanPriority;
 
-        private SearchNode(Board board, SearchNode prev, int cost, int priority) {
+        private SearchNode(Board board, SearchNode prev, int cost) {
             this.currentBoard = board;
-            this.previousBoard = prev;
+            this.previousNode = prev;
             this.currentCost = cost;
-            this.manhattanPriority = priority;  // sum of manhattan and currentCost
+            this.manhattanPriority = this.currentBoard.manhattan()
+                    + this.currentCost;  // sum of manhattan distance and currentCost
         }
 
         // this is necessary when deleting min from PQ and adding neighbors
