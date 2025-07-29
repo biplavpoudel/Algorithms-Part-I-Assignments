@@ -101,7 +101,7 @@ public class Board {
                 int goal_row = (int) Math.floor((double) (this.tiles[i][j] - 1) / size);
                 int goal_col = (int) ((double) (this.tiles[i][j] - 1) % size);
                 int manhattenDist = Math.abs(goal_col - j) + Math.abs(goal_row - i);
-                StdOut.printf("Manhatten distance for %d is: %d\n", tiles[i][j], manhattenDist);
+                // StdOut.printf("Manhattan distance for %d is: %d\n", tiles[i][j], manhattanDist);
                 manhattenSum += manhattenDist;
             }
         }
@@ -227,7 +227,9 @@ public class Board {
         }
     }
 
-    private static Board readBoard(In in) {
+    // unit testing
+    public static void main(String[] args) {
+        In in = new In(args[0]);
         int dimension = in.readInt();
         if (dimension < 2 || dimension >= 128) {
             throw new IllegalArgumentException(
@@ -241,39 +243,20 @@ public class Board {
                 tiles[i][j] = in.readInt();
             }
         }
-        return new Board(tiles);
-    }
+        Board board = new Board(tiles);
+        StdOut.printf("\nThe original board is: %s \n", board);
 
+        StdOut.printf("\nThe number of wrongly placed tiles is: %d\n", board.hamming());
+        StdOut.printf("\nThe Manhattan sum is: %d\n", board.manhattan());
+        StdOut.printf("Is Goal?: %b\n", board.isGoal());
 
-    // unit testing
-    public static void main(String[] args) {
-        if (args.length == 1) {
-            Board board = readBoard(new In(args[0]));
-            StdOut.print("\nThe original board is: \n");
-            StdOut.print(board);
-            // StdOut.printf("\nThe number of wrongly placed tiles is: %d\n", board.hamming());
-            // StdOut.printf("\nThe Manhattan sum is: %d\n", board.manhattan());
-            // StdOut.printf("Is Goal?: %b\n", board.isGoal());
-            StdOut.print("\nThe neighbors are: \n");
-            for (Board neighbor : board.neighbors()) {
-                System.out.println(neighbor);
-            }
-            StdOut.print("\n A twin board is:\n");
-            StdOut.print(board.twin());
-
+        StdOut.print("\nThe neighbors are: \n");
+        for (Board neighbor : board.neighbors()) {
+            System.out.println(neighbor);
         }
-        else if (args.length == 2) {
-            Board board1 = readBoard(new In(args[0]));
-            Board board2 = readBoard(new In(args[1]));
 
-            StdOut.print(board1.toString());
-            StdOut.printf("\nThe number of wrongly placed tiles is: %d\n", board1.hamming());
-            StdOut.printf("\nThe Manhatten sum is: %d\n", board1.manhattan());
-            StdOut.printf("Is Goal?: %b\n", board1.isGoal());
+        StdOut.print("\n A twin board is:\n");
+        StdOut.print(board.twin());
 
-            StdOut.printf("Is the given tile equal to second tile?: %b\n",
-                          board1.equals(board2));
-
-        }
     }
 }

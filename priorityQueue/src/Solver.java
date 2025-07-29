@@ -8,6 +8,11 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 public class Solver {
     private SearchNode searchNode;
     private SearchNode twinNode;
@@ -32,6 +37,7 @@ public class Solver {
 
         // Removing the initial Node to add neighbors
         searchNode = queue.delMin();
+        StdOut.printf("The initial board is: %s", searchNode.currentBoard);
         twinNode = twinQueue.delMin();
 
         // checking if the initialNode is the goal Node
@@ -44,15 +50,19 @@ public class Solver {
 
             for (Board board : searchNode.currentBoard.neighbors()) {
                 // critical optimization for disallowing already explored searchNodes
-                if (board.equals(searchNode.previousNode.currentBoard)) continue;
-                queue.insert(new SearchNode(board, searchNode, searchNode.currentCost + 1));
+                if (searchNode.previousNode == null || !board.equals(
+                        searchNode.previousNode.currentBoard)) {
+                    queue.insert(new SearchNode(board, searchNode, searchNode.currentCost + 1));
+                }
             }
             searchNode = queue.delMin();
 
             for (Board board : twinNode.currentBoard.neighbors()) {
                 // critical optimization for disallowing already explored searchNodes
-                if (board.equals(twinNode.previousNode.currentBoard)) continue;
-                queue.insert(new SearchNode(board, twinNode, twinNode.currentCost + 1));
+                if (twinNode.previousNode == null || !board.equals(
+                        twinNode.previousNode.currentBoard)) {
+                    twinQueue.insert(new SearchNode(board, twinNode, twinNode.currentCost + 1));
+                }
             }
             twinNode = twinQueue.delMin();
             // Checking if the new searchNode (child) is the goal
@@ -75,7 +85,26 @@ public class Solver {
 
     // sequence of boards in the shortest solution; null if unsolvable
     public Iterable<Board> solution() {
-        return null;
+        if (!isSolvable) return null;
+        return new Iterable<Board>() {
+            private List<Board> solutionList = new ArrayList<Board>();
+
+            {
+                // adding the goal node first to the List
+                solutionList.add(searchNode.currentBoard);
+
+                while (searchNode.previousNode.currentBoard != null) {
+                    solutionList.add(searchNode.previousNode.currentBoard);
+                    searchNode = searchNode.previousNode;
+                }
+                Collections.reverse(solutionList);
+
+            }
+
+            public Iterator<Board> iterator() {
+                return solutionList.iterator();
+            }
+        };
     }
 
     private class SearchNode implements Comparable<SearchNode> {
