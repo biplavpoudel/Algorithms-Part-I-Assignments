@@ -38,6 +38,7 @@ public class Solver {
         // Removing the initial Node to add neighbors
         searchNode = queue.delMin();
         StdOut.printf("The initial board is: %s", searchNode.currentBoard);
+
         twinNode = twinQueue.delMin();
 
         // checking if the initialNode is the goal Node
@@ -90,12 +91,13 @@ public class Solver {
             private List<Board> solutionList = new ArrayList<Board>();
 
             {
+                SearchNode node = searchNode;
                 // adding the goal node first to the List
-                solutionList.add(searchNode.currentBoard);
+                // solutionList.add(node.currentBoard);
 
-                while (searchNode.previousNode.currentBoard != null) {
-                    solutionList.add(searchNode.previousNode.currentBoard);
-                    searchNode = searchNode.previousNode;
+                while (node != null) {
+                    solutionList.add(node.currentBoard);
+                    node = node.previousNode;
                 }
                 Collections.reverse(solutionList);
 

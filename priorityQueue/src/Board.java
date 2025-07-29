@@ -24,6 +24,7 @@ public class Board {
     private int blankX;
     private int blankY;
 
+
     public Board(int[][] tiles) {
         this.tiles = tiles;
         setBlanks();
@@ -110,9 +111,7 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        if (this.tiles == getGoal())
-            return true;
-        return false;
+        return hamming() == 0;
     }
 
     // does this board equal y?
