@@ -26,14 +26,13 @@ public class Solver {
         /*To find out if the initial board is solvable or not,
         we take a twin and solve it side-by-side with the initial board
         only one will be solvable.*/
-        Board twin = initial.twin();
 
         MinPQ<SearchNode> queue = new MinPQ<>();
         // if moves = 0, priority = manhattan + moves = manhattan
         queue.insert(new SearchNode(initial, null, 0));
 
         MinPQ<SearchNode> twinQueue = new MinPQ<>();
-        twinQueue.insert(new SearchNode(twin, null, 0));
+        twinQueue.insert(new SearchNode(initial.twin(), null, 0));
 
         // Removing the initial Node to add neighbors
         searchNode = queue.delMin();
