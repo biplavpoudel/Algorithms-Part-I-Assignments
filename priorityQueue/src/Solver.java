@@ -6,11 +6,8 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class Solver {
     private SearchNode searchNode;
@@ -83,20 +80,18 @@ public class Solver {
     // sequence of boards in the shortest solution; null if unsolvable
     public Iterable<Board> solution() {
         if (!isSolvable) return null;
-        List<Board> solutionList = new ArrayList<Board>();
+        Stack<Board> solutionStack = new Stack<Board>();
 
         SearchNode node = searchNode;
         // adding the goal node first to the List
         // solutionList.add(node.currentBoard);
 
         while (node != null) {
-            solutionList.add(node.currentBoard);
+            solutionStack.push(node.currentBoard);
             node = node.previousNode;
         }
-        Collections.reverse(solutionList);
 
-
-        return solutionList;
+        return solutionStack;
     }
 
     private class SearchNode implements Comparable<SearchNode> {
