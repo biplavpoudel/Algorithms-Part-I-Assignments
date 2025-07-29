@@ -19,18 +19,28 @@ public class Board {
     Also assume that 2 ≤ n < 128.
     */
     private final int[][] tiles;
-    private int blankX;
-    private int blankY;
+    private final int blankX;
+    private final int blankY;
 
 
     public Board(int[][] tiles) {
         // creating a deep, defensive copy of the tiles to avoid exposing the internal representation of the Board
         int n = tiles.length;
+        int xBlank = -1;
+        int yBlank = -1;
         this.tiles = new int[n][n];
         for (int i = 0; i < n; i++) {
             System.arraycopy(tiles[i], 0, this.tiles[i], 0, n);
+            // to find out blank tiles
+            for (int j = 0; j < n; j++) {
+                if (this.tiles[i][j] == 0) {
+                    xBlank = i;
+                    yBlank = j;
+                }
+            }
         }
-        setBlanks();
+        this.blankX = xBlank;
+        this.blankY = yBlank;
     }
 
     /*
@@ -176,7 +186,7 @@ public class Board {
         // Use StdRandom to generate random indices
         int n = dimension();
         int[][] copy = copyTiles();
-
+        // making the twin() method deterministic and simpler by avoiding random indices
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n - 1; j++) {
                 if (copy[i][j] != 0 && copy[i][j + 1] != 0) {
@@ -202,20 +212,6 @@ public class Board {
         arr[newRow][newCol] = arr[blankRow][blankCol];
         arr[blankRow][blankCol] = temp;
         return arr;
-    }
-
-    private void setBlanks() {
-        // finding blank position
-        int size = this.tiles.length;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (tiles[i][j] == 0) {
-                    this.blankX = i;
-                    this.blankY = j;
-                    break;
-                }
-            }
-        }
     }
 
     // unit testing
