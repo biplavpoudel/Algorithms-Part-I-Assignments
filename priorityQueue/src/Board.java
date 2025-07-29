@@ -10,7 +10,6 @@ import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class Board {
@@ -26,7 +25,12 @@ public class Board {
 
 
     public Board(int[][] tiles) {
-        this.tiles = tiles;
+        // creating a deep, defensive copy of the tiles to avoid exposing the internal representation of the Board
+        int n = tiles.length;
+        this.tiles = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(tiles[i], 0, this.tiles[i], 0, n);
+        }
         setBlanks();
     }
 
@@ -38,16 +42,18 @@ public class Board {
     */
     public String toString() {
         int size = dimension();
-        String output = Integer.toString(size);
-        output = output + "\n";
+        // String output = Integer.toString(size);
+        // using + operator to add string can take quadratic time in the length of resulting string, so using StringBuilder
+        StringBuilder output = new StringBuilder(Integer.toString(size));
+        output.append("\n");
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                output += Integer.toString(this.tiles[i][j]);
-                output += "\t";
+                output.append(Integer.toString(this.tiles[i][j]));
+                output.append("\t");
             }
-            output += "\n";
+            output.append("\n");
         }
-        return output;
+        return output.toString();
     }
 
     // board dimension n
@@ -99,9 +105,9 @@ public class Board {
                 so...24 in 5x5 tile is stored at: (23 = 5*4+3) = (4,3) = (quotient, remainder)
                 or, 4 = 23 // 5 and 3 = 23 % 5
                 */
-                int goal_row = (int) Math.floor((double) (this.tiles[i][j] - 1) / size);
-                int goal_col = (int) ((double) (this.tiles[i][j] - 1) % size);
-                int manhattenDist = Math.abs(goal_col - j) + Math.abs(goal_row - i);
+                int goalRow = (int) Math.floor((double) (this.tiles[i][j] - 1) / size);
+                int goalCol = (int) ((double) (this.tiles[i][j] - 1) % size);
+                int manhattenDist = Math.abs(goalCol - j) + Math.abs(goalRow - i);
                 // StdOut.printf("Manhattan distance for %d is: %d\n", tiles[i][j], manhattanDist);
                 manhattenSum += manhattenDist;
             }
@@ -141,35 +147,29 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        return new Iterable<Board>() {
 
-            // Depending on location of blank space, number of neighbors can be 2,3 or 4
-            private List<Board> neighbors = new ArrayList<>();
+        // Depending on location of blank space, number of neighbors can be 2,3 or 4
+        List<Board> neighbors = new ArrayList<>();
 
-            // creating neighbors using standalone code block
-            {
-                // possible directions for blanks: top, left, right, bottom
-                int[][] neighborsDirections = new int[][] {
-                        { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 }
-                };
-                int size = dimension();
-
-                for (int[] directions : neighborsDirections) {
-                    int newRow = blankX + directions[0];
-                    int newCol = blankY + directions[1];
-                    int[][] copyTiles = copyTiles();
-
-                    if (newRow >= 0 && newCol >= 0 && newRow < size && newCol < size) {
-                        neighbors.add(
-                                new Board(swapTiles(copyTiles, blankX, blankY, newRow, newCol)));
-                    }
-                }
-            }
-
-            public Iterator<Board> iterator() {
-                return neighbors.iterator();
-            }
+        // possible directions for blanks: top, left, right, bottom
+        int[][] neighborsDirections = new int[][] {
+                { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 }
         };
+        int size = dimension();
+
+        for (int[] directions : neighborsDirections) {
+            int newRow = blankX + directions[0];
+            int newCol = blankY + directions[1];
+            int[][] copyTiles = copyTiles();
+
+            if (newRow >= 0 && newCol >= 0 && newRow < size && newCol < size) {
+                neighbors.add(
+                        new Board(swapTiles(copyTiles, blankX, blankY, newRow, newCol)));
+            }
+        }
+
+        return neighbors;
+
     }
 
     // a board that is obtained by exchanging any pair of tiles (excluding blanks)

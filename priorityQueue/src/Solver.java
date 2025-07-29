@@ -10,23 +10,20 @@ import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class Solver {
     private SearchNode searchNode;
-    private SearchNode twinNode;
     private boolean isSolvable;
 
     // find a solution to the initial board (using the A* algorithm)
     // using Manhattan Priority function
     public Solver(Board initial) {
-        if (initial == null) throw new IllegalArgumentException("The board initial is empty!");
+        if (initial == null) throw new IllegalArgumentException();
 
-        /*To find out if the initial board is solvable or not,
-        we take a twin and solve it side-by-side with the initial board
-        only one will be solvable.*/
-
+        // To find out if the initial board is solvable or not,
+        // we take a twin and solve it side-by-side with the initial board
+        // only one will be solvable.
         MinPQ<SearchNode> queue = new MinPQ<>();
         // if moves = 0, priority = manhattan + moves = manhattan
         queue.insert(new SearchNode(initial, null, 0));
@@ -36,9 +33,9 @@ public class Solver {
 
         // Removing the initial Node to add neighbors
         searchNode = queue.delMin();
-        StdOut.printf("The initial board is: %s", searchNode.currentBoard);
+        // StdOut.printf("The initial board is: %s", searchNode.currentBoard);
 
-        twinNode = twinQueue.delMin();
+        SearchNode twinNode = twinQueue.delMin();
 
         // checking if the initialNode is the goal Node
         isSolvable = searchNode.currentBoard.isGoal();
@@ -86,33 +83,27 @@ public class Solver {
     // sequence of boards in the shortest solution; null if unsolvable
     public Iterable<Board> solution() {
         if (!isSolvable) return null;
-        return new Iterable<Board>() {
-            private List<Board> solutionList = new ArrayList<Board>();
+        List<Board> solutionList = new ArrayList<Board>();
 
-            {
-                SearchNode node = searchNode;
-                // adding the goal node first to the List
-                // solutionList.add(node.currentBoard);
+        SearchNode node = searchNode;
+        // adding the goal node first to the List
+        // solutionList.add(node.currentBoard);
 
-                while (node != null) {
-                    solutionList.add(node.currentBoard);
-                    node = node.previousNode;
-                }
-                Collections.reverse(solutionList);
+        while (node != null) {
+            solutionList.add(node.currentBoard);
+            node = node.previousNode;
+        }
+        Collections.reverse(solutionList);
 
-            }
 
-            public Iterator<Board> iterator() {
-                return solutionList.iterator();
-            }
-        };
+        return solutionList;
     }
 
     private class SearchNode implements Comparable<SearchNode> {
-        private Board currentBoard;
-        private SearchNode previousNode;
-        private int currentCost;
-        private int manhattanPriority;
+        private final Board currentBoard;
+        private final SearchNode previousNode;
+        private final int currentCost;
+        private final int manhattanPriority;
 
         private SearchNode(Board board, SearchNode prev, int cost) {
             this.currentBoard = board;
@@ -124,8 +115,8 @@ public class Solver {
 
         // this is necessary when deleting min from PQ and adding neighbors
         @Override
-        public int compareTo(SearchNode o) {
-            return Integer.compare(this.manhattanPriority, o.manhattanPriority);
+        public int compareTo(SearchNode that) {
+            return Integer.compare(this.manhattanPriority, that.manhattanPriority);
         }
     }
 
