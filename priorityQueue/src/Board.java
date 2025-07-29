@@ -6,7 +6,6 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,22 +176,15 @@ public class Board {
         // Use StdRandom to generate random indices
         int n = dimension();
         int[][] copy = copyTiles();
-        int i, j, p, q;
-        /*
-        Ensures the indices are set only when all three conditions are false:
-            1. Row and Column are same (i.e. same tiles)
-            2. copy[i][j] is blank
-            3. copy[p][q] is blank
-         */
-        do {
-            i = StdRandom.uniformInt(n);
-            j = StdRandom.uniformInt(n);
-            p = StdRandom.uniformInt(n);
-            q = StdRandom.uniformInt(n);
-        } while ((p == i && q == j) || copy[i][j] == 0 || copy[p][q] == 0);
 
-        // now swapping two random, unequal tiles
-        return new Board(swapTiles(copy, i, j, p, q));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n - 1; j++) {
+                if (copy[i][j] != 0 && copy[i][j + 1] != 0) {
+                    return new Board(swapTiles(copy, i, j, i, j + 1));
+                }
+            }
+        }
+        throw new IllegalStateException("No valid twin found");
     }
 
     private int[][] copyTiles() {
