@@ -11,6 +11,9 @@ import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // A mutable data type to represent a set of points in the unit square
 // (all points have x- and y-coordinates between 0 and 1)
 // using a 2d-tree to support efficient range search (find all the points contained in a query rectangle)
@@ -28,7 +31,7 @@ public class PointSET {
 
     // Returns true if the set is empty
     public boolean isEmpty() {
-        return size() == 0;
+        return this.rbBST.isEmpty();
     }
 
     // Returns the number of points in the set
@@ -63,13 +66,31 @@ public class PointSET {
     // Returns all points that are inside the rectangle (or on the boundary)
     // Worst Case: time proportional to the number of points in the set
     public Iterable<Point2D> range(RectHV rect) {
-        return null;
+        if (rect == null) throw new IllegalArgumentException("The rectangle object is null!");
+        List<Point2D> rangeBST = new ArrayList<>();
+        for (Point2D point : rbBST) {
+            if (rect.contains(point)) {
+                rangeBST.add(point);
+            }
+        }
+        return rangeBST;
     }
 
     // Returns a nearest neighbor in the set to point p; null if the set is empty
     // Worst Case: time proportional to the number of points in the set
     public Point2D nearest(Point2D p) {
-        return null;
+        if (p == null) throw new IllegalArgumentException("The point object is null!");
+        Point2D closestNeighbor = rbBST.iterator().next();
+        // Squared distance is faster to compute as sqrt is not used
+        double minDist = closestNeighbor.distanceSquaredTo(p);
+        for (Point2D point : rbBST) {
+            double dist = point.distanceSquaredTo(p);
+            if (dist < minDist) {
+                minDist = dist;
+                closestNeighbor = point;
+            }
+        }
+        return closestNeighbor;
     }
 
     // Unit testing of the methods
@@ -82,6 +103,32 @@ public class PointSET {
             sets.insert(new Point2D(xAxis, yAxis));
         }
         sets.draw();
+
+        // For nearest neighbor
+        Point2D test = new Point2D(0.5, 0.8);
+        StdDraw.setPenColor(StdDraw.RED);
+        StdDraw.point(test.x(), test.y());
+
+        Point2D nearest = sets.nearest(test);
+        StdOut.printf("The closest point is: %s", sets.nearest(test));
+        StdDraw.setPenColor(StdDraw.BLUE);
+        StdDraw.point(nearest.x(), nearest.y());
+
+        // For 2D range
+        RectHV testRect = new RectHV(0.300, 0.700, 0.900, 0.850);
+        StdDraw.setPenColor(StdDraw.GREEN);
+
+        // Calculating center, half-width, and half-height
+        double centerX = (testRect.xmin() + testRect.xmax()) / 2.0;
+        double centerY = (testRect.ymin() + testRect.ymax()) / 2.0;
+        double halfWidth = (testRect.xmax() - testRect.xmin()) / 2.0;
+        double halfHeight = (testRect.ymax() - testRect.ymin()) / 2.0;
+        StdDraw.rectangle(centerX, centerY, halfWidth, halfHeight);
+
+        StdOut.printf("\n\nThe points in 2d range are:\n");
+        for (Point2D points : sets.range(testRect)) {
+            StdOut.print(points);
+        }
     }
 }
 
