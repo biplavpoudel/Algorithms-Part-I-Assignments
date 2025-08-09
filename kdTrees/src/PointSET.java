@@ -14,11 +14,18 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.ArrayList;
 import java.util.List;
 
-// A mutable data type to represent a set of points in the unit square
-// (all points have x- and y-coordinates between 0 and 1)
-// using a 2d-tree to support efficient range search (find all the points contained in a query rectangle)
-// and nearest-neighbor search (find the closest point to a query point).
-
+/**
+ * The {@code PointSET} represents a mutable data type to represent a set of points in
+ * the unit square (all points have x- and y-coordinates between 0 and 1).<br><br>
+ * PointSET uses a red-black BST for:
+ * <ul>
+ * <li>an eﬃcient range search (to find all the points contained in a query) rectangle.
+ * <li>a nearest-neighbor search (to ﬁnd the closest point to a query point).
+ * </ul>
+ * <p>
+ * This implementation uses a red-black BST using default library from algs4 package: {@code SET}.
+ * </p>
+ */
 public class PointSET {
 
     // edu.princeton.cs.algs4.SET is used to implement Red-Black Tree

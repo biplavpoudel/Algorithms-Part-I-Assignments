@@ -7,6 +7,30 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
+/**
+ * The {@code KdTree} represents a mutable data type to represent a set of points in
+ * the unit square, same as {@code PointSET}.
+ * <p>
+ * Instead of <b>BST</b>, KdTree uses <b>2d-tree </b>to implement the same API.
+ * The 2d-tree is a generalization of a BST to two-dimensional keys.
+ * </p>
+ * <p>
+ * The idea is to build a BST with points in the nodes,
+ * using the x- and y-coordinates of the points as keys in strictly alternating sequence.
+ * </p>
+ * The prime advantage of a 2d-tree over a BST is that it supports efficient implementation of range
+ * search and nearest-neighbor search.
+ * <ul>
+ * <li>Each node corresponds to an axis-aligned rectangle in the
+ * unit square, which encloses all the points in its subtree.
+ * </li>
+ * <li>
+ * The root corresponds to the unit square;
+ * the left and right children of the root corresponds to the two rectangles split by the
+ * x-coordinate of the point at the root; and so forth.
+ * </li>
+ * </ul>
+ */
 public class KdTree {
 
     // Constructs an empty set of points
