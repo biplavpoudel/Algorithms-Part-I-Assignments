@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * The {@code PointSET} represents a mutable data type to represent a set of points in
  * the unit square (all points have x- and y-coordinates between 0 and 1).<br><br>
- * PointSET uses a red-black BST for:
+ * PointSET, a brute-force implementation, uses a red-black BST for:
  * <ul>
  * <li>an eﬃcient range search (to find all the points contained in a query) rectangle.
  * <li>a nearest-neighbor search (to ﬁnd the closest point to a query point).

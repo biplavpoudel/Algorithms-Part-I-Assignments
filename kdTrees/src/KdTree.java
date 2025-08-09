@@ -33,39 +33,93 @@ import edu.princeton.cs.algs4.RectHV;
  */
 public class KdTree {
 
+    // Data structure to represent a node in 2d-tree
+    private static class Node {
+        private Point2D point;
+        private Node leftNode, rightNode;
+        private int count;
+
+        private Node(Point2D point, Node leftNode, Node rightNode, int count) {
+            this.point = point;
+            this.leftNode = leftNode;
+            this.rightNode = rightNode;
+            this.count = count;
+        }
+    }
+
+    private Node root;
+
     // Constructs an empty set of points
     public KdTree() {
     }
 
-    // Returns true if the set is empty
+    /**
+     * @return {@code true} if kdTree is empty, {@code false} is otherwise.
+     */
     public boolean isEmpty() {
-        return false;
+        return (root == null);
     }
 
-    // Returns the number of points in the set
+    /**
+     * @return {@code int} number of nodes in the kdTree.
+     */
     public int size() {
-        return 0;
+        return size(root);
     }
 
-    // Adds the point to the set (if it is not already in the set)
+    /**
+     * @param node specific node
+     * @return {@code int} number of children of the node.
+     */
+    private int size(Node node) {
+        return node.count;
+    }
+
+    /**
+     * Adds the point to the set, if it is not already in the set.
+     * Running time: {@code log N}
+     *
+     * @param p a point to be inserted in the tree
+     */
     public void insert(Point2D p) {
     }
 
     // Returns true if the set contains point p
+
+    /**
+     * Checks if the point is present in the kdTree or not.
+     * Running time: {@code log N}
+     *
+     * @param p a point to be checked for pre-existence
+     * @return {@code true} if point is already present,
+     * {@code false} if point is yet to be inserted.
+     */
     public boolean contains(Point2D p) {
         return false;
     }
 
-    // Draws all points to standard draw
+    /**
+     * Draws all points to standard draw
+     */
     public void draw() {
     }
 
-    // Returns all points that are inside the rectangle (or on the boundary)
+    /**
+     * Returns all points that are inside the rectangle (or on the boundary).
+     *
+     * @param rect given query rectangle
+     * @return iterable list of points in the range of the rectangle
+     */
     public Iterable<Point2D> range(RectHV rect) {
         return null;
     }
 
-    // Returns a nearest neighbor in the set to point p; null if the set is empty
+    /**
+     * Returns a nearest neighbor in the set to point p
+     *
+     * @param p given query point.
+     * @return the Point2D point closest to the query point; null if the kdTree is empty.
+     */
     public Point2D nearest(Point2D p) {
         return null;
     }
