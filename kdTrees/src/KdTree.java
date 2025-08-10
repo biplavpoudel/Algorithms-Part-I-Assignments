@@ -167,6 +167,25 @@ public class KdTree {
      * {@code false} if point is yet to be inserted.
      */
     public boolean contains(Point2D p) {
+        if (p == null) throw new IllegalArgumentException();
+        Node currNode = root;
+        boolean oddLevel = false;
+        while (currNode != null) {
+            int cmp;
+            if (oddLevel) cmp = Double.compare(p.y(), currNode.pt.y());
+            else cmp = Double.compare(p.x(), currNode.pt.x());
+
+            if (cmp == 0 && currNode.pt.equals(p)) {
+                return true;
+            }
+            else if (cmp > 0) {
+                currNode = currNode.rightNode;
+            }
+            else if (cmp < 0) {
+                currNode = currNode.leftNode;
+            }
+            oddLevel = !oddLevel;
+        }
         return false;
     }
 
