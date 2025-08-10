@@ -6,6 +6,7 @@
 
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
 /**
  * The {@code KdTree} represents a mutable data type to represent a set of points in
@@ -197,14 +198,30 @@ public class KdTree {
     }
 
     /**
-     * Recursively draw points that divide our space.
+     * Recursively draw points that divide our space using pre-order traversal.
+     * The boundary of rect is used for vertical/horizontal line.
      *
      * @param currNode current node that is being checked
      * @param oddLevel {@code true} y is key,
      *                 {@code false}  x is key
      */
     private void draw(Node currNode, boolean oddLevel) {
-
+        if (currNode == null) return;
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(0.015);
+        StdDraw.point(currNode.pt.x(), currNode.pt.y());
+        if (oddLevel) {
+            StdDraw.setPenColor(StdDraw.BLUE);
+            StdDraw.line(currNode.rect.xmin(), currNode.pt.y(), currNode.rect.xmax(), currNode.pt.
+                    y());
+        }
+        else {
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.line(currNode.pt.x(), currNode.rect.ymin(), currNode.pt.x(),
+                         currNode.rect.ymax());
+        }
+        draw(currNode.leftNode, !oddLevel);
+        draw(currNode.rightNode, !oddLevel);
     }
 
     /**
