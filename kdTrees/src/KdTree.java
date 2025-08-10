@@ -37,16 +37,18 @@ public class KdTree {
     private static class Node {
         private Point2D point;
         private Node leftNode, rightNode;
+        private Node parentNode;
+        private boolean oddLevel;
         private int count;
 
-        private Node(Point2D point, Node leftNode, Node rightNode, int count) {
+        private Node(Point2D point, int count, boolean oddLevel) {
             this.point = point;
-            this.leftNode = leftNode;
-            this.rightNode = rightNode;
             this.count = count;
+            this.oddLevel = oddLevel;
         }
     }
 
+    // The root node of KdTree
     private Node root;
 
     // Constructs an empty set of points
@@ -64,14 +66,14 @@ public class KdTree {
      * @return {@code int} number of nodes in the kdTree.
      */
     public int size() {
-        return size(root);
+        return getSize(root);
     }
 
     /**
      * @param node specific node
      * @return {@code int} number of children of the node.
      */
-    private int size(Node node) {
+    private int getSize(Node node) {
         return node.count;
     }
 
@@ -82,9 +84,43 @@ public class KdTree {
      * @param p a point to be inserted in the tree
      */
     public void insert(Point2D p) {
+        if (p == null) throw new IllegalArgumentException();
+        // If tree is empty, add first node as root
+        if (root == null) {
+            root = new Node(p, 1, false);
+            return;
+        }
+
+        // Let's use recursive insertion to insert new nodes into the tree
+        root = put(root, p, false); // root is even level
     }
 
-    // Returns true if the set contains point p
+    private Node put(Node currNode, Point2D point, boolean oddLevel) {
+        if (currNode == null) return new Node(point, 1, oddLevel);
+        // for odd levels, we compare y-axis
+        if (oddLevel) {
+            int cmp = Double.compare(currNode.point.y(), point.y());
+            if (cmp > 0) {
+                currNode = put(currNode.leftNode, point, !currNode.oddLevel);
+            }
+            else {
+                currNode = put(currNode.rightNode, point, !currNode.oddLevel);
+            }
+        }
+        // for even levels, x-axis is compared
+        else {
+            int cmp = Double.compare(currNode.point.x(), point.x());
+            if (cmp > 0) {
+                currNode = put(currNode.leftNode, point, !currNode.oddLevel);
+            }
+            else {
+                currNode = put(currNode.rightNode, point, !currNode.oddLevel);
+            }
+        }
+        currNode.count = 1 + getSize(currNode.leftNode) + getSize(currNode.rightNode);
+        return currNode;
+    }
+
 
     /**
      * Checks if the point is present in the kdTree or not.
