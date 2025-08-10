@@ -33,33 +33,21 @@ import edu.princeton.cs.algs4.RectHV;
  */
 public class KdTree {
 
-    // To represent the line boundary of each node
-    private static class Line {
-        private double xmin, xmax, ymin, ymax;
-
-        private Line(double xmin, double ymin, double xmax, double ymax) {
-            this.xmin = xmin;
-            this.ymin = ymin;
-            this.xmax = xmax;
-            this.ymax = ymax;
-        }
-    }
-
     // Data structure to represent a node in 2d-tree
     private static class Node {
 
-        private Point2D point;
-        private final Line line;
+        private Point2D pt;
+        private final RectHV rect;
         private Node leftNode, rightNode;
         private Node parentNode;
         private boolean oddLevel;
         private int count;
 
-        private Node(Point2D point, int count, boolean oddLevel, Line line) {
-            this.point = point;
+        private Node(Point2D point, int count, boolean oddLevel, RectHV rect) {
+            this.pt = point;
             this.count = count;
             this.oddLevel = oddLevel;
-            this.line = line;
+            this.rect = rect;
         }
     }
 
@@ -103,38 +91,67 @@ public class KdTree {
         if (p == null) throw new IllegalArgumentException();
         // If tree is empty, add first node as root
         if (root == null) {
-            root = new Node(p, 1, false, new Line(p.x(), -1, p.x(), 1));
+            root = new Node(p, 1, false, new RectHV(0.0, 0.0, 1.0, 1.0));
             return;
         }
 
         // Let's use recursive insertion to insert new nodes into the tree
         // No need to fret thinking root changes with each insertion,
         // as the put() returns the original root itself through recursion
-        root = put(root, p, false, root.line); // root is even level
+        root = put(root, p, false, root.rect); // root is even level
     }
 
-    private Node put(Node currNode, Point2D point, boolean oddLevel, Line line) {
-        if (currNode == null) return new Node(point, 1, oddLevel, line);
-        // for odd levels, we compare y-axis
-        if (oddLevel) {
-            int cmp = Double.compare(currNode.point.y(), point.y());
-            if (cmp > 0) {
-                
-                currNode.leftNode = put(currNode.leftNode, point, !currNode.oddLevel);
+    private Node put(Node currNode, Point2D point, boolean oddLevel, RectHV rect) {
+        if (currNode == null) return new Node(point, 1, oddLevel, rect);
+        // for even levels, x-axis is compared
+        if (!oddLevel) {
+            int cmp = Double.compare(point.x(), currNode.pt.x());
+            RectHV boundary;
+            if (cmp >= 0) {
+                if (currNode.rightNode == null) {
+                    boundary = new RectHV(currNode.pt.x(), rect.ymin(), rect.xmax(),
+                                          rect.ymax());
+                }
+                else {
+                    boundary = currNode.rightNode.rect;
+                }
+                currNode.rightNode = put(currNode.rightNode, point, !currNode.oddLevel, boundary);
             }
             else {
-                currNode.rightNode = put(currNode.rightNode, point, !currNode.oddLevel);
+                if (currNode.leftNode == null) {
+                    boundary = new RectHV(rect.xmin(), rect.ymin(), currNode.pt.x(),
+                                          rect.ymax());
+                }
+                else {
+                    boundary = currNode.leftNode.rect;
+                }
+                currNode.leftNode = put(currNode.leftNode, point, !currNode.oddLevel, boundary);
             }
         }
-        // for even levels, x-axis is compared
+        // for odd levels, we compare y-axis
         else {
-            int cmp = Double.compare(currNode.point.x(), point.x());
-            if (cmp > 0) {
-                currNode.leftNode = put(currNode.leftNode, point, !currNode.oddLevel);
+            RectHV boundary;
+            int cmp = Double.compare(point.y(), currNode.pt.y());
+            if (cmp >= 0) {
+                if (currNode.rightNode == null) {
+                    boundary = new RectHV(rect.xmin(), currNode.pt.y(), rect.xmax(),
+                                          rect.ymax());
+                }
+                else {
+                    boundary = currNode.rightNode.rect;
+                }
+                currNode.rightNode = put(currNode.rightNode, point, !currNode.oddLevel, boundary);
             }
             else {
-                currNode.rightNode = put(currNode.rightNode, point, !currNode.oddLevel);
+                if (currNode.leftNode == null) {
+                    boundary = new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), currNode.pt.y());
+                }
+                else {
+                    boundary = currNode.leftNode.rect;
+                }
+                currNode.leftNode = put(currNode.leftNode, point, !currNode.oddLevel, boundary);
             }
+
         }
         currNode.count = 1 + size(currNode.leftNode) + size(currNode.rightNode);
         return currNode;
@@ -157,6 +174,18 @@ public class KdTree {
      * Draws all points to standard draw
      */
     public void draw() {
+        draw(root, false);
+    }
+
+    /**
+     * Recursively draw points that divide our space.
+     *
+     * @param currNode current node that is being checked
+     * @param oddLevel {@code true} y is key,
+     *                 {@code false}  x is key
+     */
+    private void draw(Node currNode, boolean oddLevel) {
+
     }
 
     /**
