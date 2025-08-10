@@ -33,18 +33,33 @@ import edu.princeton.cs.algs4.RectHV;
  */
 public class KdTree {
 
+    // To represent the line boundary of each node
+    private static class Line {
+        private double xmin, xmax, ymin, ymax;
+
+        private Line(double xmin, double ymin, double xmax, double ymax) {
+            this.xmin = xmin;
+            this.ymin = ymin;
+            this.xmax = xmax;
+            this.ymax = ymax;
+        }
+    }
+
     // Data structure to represent a node in 2d-tree
     private static class Node {
+
         private Point2D point;
+        private final Line line;
         private Node leftNode, rightNode;
         private Node parentNode;
         private boolean oddLevel;
         private int count;
 
-        private Node(Point2D point, int count, boolean oddLevel) {
+        private Node(Point2D point, int count, boolean oddLevel, Line line) {
             this.point = point;
             this.count = count;
             this.oddLevel = oddLevel;
+            this.line = line;
         }
     }
 
@@ -66,14 +81,15 @@ public class KdTree {
      * @return {@code int} number of nodes in the kdTree.
      */
     public int size() {
-        return getSize(root);
+        return size(root);
     }
 
     /**
      * @param node specific node
      * @return {@code int} number of children of the node.
      */
-    private int getSize(Node node) {
+    private int size(Node node) {
+        if (node == null) return 0;
         return node.count;
     }
 
@@ -87,37 +103,40 @@ public class KdTree {
         if (p == null) throw new IllegalArgumentException();
         // If tree is empty, add first node as root
         if (root == null) {
-            root = new Node(p, 1, false);
+            root = new Node(p, 1, false, new Line(p.x(), -1, p.x(), 1));
             return;
         }
 
         // Let's use recursive insertion to insert new nodes into the tree
-        root = put(root, p, false); // root is even level
+        // No need to fret thinking root changes with each insertion,
+        // as the put() returns the original root itself through recursion
+        root = put(root, p, false, root.line); // root is even level
     }
 
-    private Node put(Node currNode, Point2D point, boolean oddLevel) {
-        if (currNode == null) return new Node(point, 1, oddLevel);
+    private Node put(Node currNode, Point2D point, boolean oddLevel, Line line) {
+        if (currNode == null) return new Node(point, 1, oddLevel, line);
         // for odd levels, we compare y-axis
         if (oddLevel) {
             int cmp = Double.compare(currNode.point.y(), point.y());
             if (cmp > 0) {
-                currNode = put(currNode.leftNode, point, !currNode.oddLevel);
+                
+                currNode.leftNode = put(currNode.leftNode, point, !currNode.oddLevel);
             }
             else {
-                currNode = put(currNode.rightNode, point, !currNode.oddLevel);
+                currNode.rightNode = put(currNode.rightNode, point, !currNode.oddLevel);
             }
         }
         // for even levels, x-axis is compared
         else {
             int cmp = Double.compare(currNode.point.x(), point.x());
             if (cmp > 0) {
-                currNode = put(currNode.leftNode, point, !currNode.oddLevel);
+                currNode.leftNode = put(currNode.leftNode, point, !currNode.oddLevel);
             }
             else {
-                currNode = put(currNode.rightNode, point, !currNode.oddLevel);
+                currNode.rightNode = put(currNode.rightNode, point, !currNode.oddLevel);
             }
         }
-        currNode.count = 1 + getSize(currNode.leftNode) + getSize(currNode.rightNode);
+        currNode.count = 1 + size(currNode.leftNode) + size(currNode.rightNode);
         return currNode;
     }
 
