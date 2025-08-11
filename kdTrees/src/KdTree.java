@@ -292,7 +292,6 @@ public class KdTree {
 
         if (currDist < closestDist) {
             closest = curr.pt;
-            closestDist = currDist;
         }
 
         int cmp = oddLevel ? Double.compare(that.y(), curr.pt.y()) :
@@ -307,12 +306,13 @@ public class KdTree {
         // this checks for closest in the side of the point
         closest = nearest(firstCheck, that, closest, !oddLevel);
         // updating closestDist after exploring firstCheck
-        closestDist = closest.distanceSquaredTo(that);
+        double newClosestDist = closest.distanceSquaredTo(that);
 
         // this checks for closest in the other side of the point,
         // if the distance from rect (corresponding to this 2nd node) is smaller than the closest point
 
-        if (secondCheck != null && secondCheck.rect.distanceSquaredTo(that) < closestDist) {
+        if (secondCheck != null
+                && secondCheck.rect.distanceSquaredTo(that) < newClosestDist) {
             closest = nearest(secondCheck, that, closest, !oddLevel);
         }
 
