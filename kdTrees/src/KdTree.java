@@ -10,6 +10,7 @@ import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Stopwatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -305,6 +306,8 @@ public class KdTree {
 
         // this checks for closest in the side of the point
         closest = nearest(firstCheck, that, closest, !oddLevel);
+        // updating closestDist after exploring firstCheck
+        closestDist = closest.distanceSquaredTo(that);
 
         // this checks for closest in the other side of the point,
         // if the distance from rect (corresponding to this 2nd node) is smaller than the closest point
@@ -328,33 +331,33 @@ public class KdTree {
         }
         KdTree kdtree = new KdTree();
         // start timer and build tree
-        // Stopwatch watch = new Stopwatch();
+        Stopwatch watch = new Stopwatch();
         for (Point2D pt : points) {
             kdtree.insert(pt);
         }
-        // // stop timer and check time to build tree, excluding reading inputs from file
-        // StdOut.printf("Elapsed time to build kdTree is: %.6f seconds\n ", watch.elapsedTime());
-        // StdOut.printf("Size of kdTree is: %d \n", kdtree.size());
+        // stop timer and check time to build tree, excluding reading inputs from file
+        StdOut.printf("Elapsed time to build kdTree is: %.6f seconds\n ", watch.elapsedTime());
+        StdOut.printf("Size of kdTree is: %d \n", kdtree.size());
 
         // using input1M.txt
         // Point2D toFind = new Point2D(0.684711, 0.818767);
-        Point2D toFind = new Point2D(1.0, 0.0);
+        Point2D toFind = new Point2D(1.222, 0.0);
         StdOut.printf("Does it contain %s ? %b \n", toFind, kdtree.contains(toFind));
 
-        // // start timer to find number of operations per second
-        // long start = System.nanoTime();
-        // Point2D p = new Point2D(0.864, 0.565);
-        // // for input1M.txt, should be (0.864377, 0.564852)
-        // Point2D nearest = kdtree.nearest(p);
-        // long end = System.nanoTime();
-        //
-        // StdOut.printf("The number of nearest neighbor calls is: %d \n", kdtree.getNearestCalls());
-        // double elapsedSec = (end - start) / 1e9;
-        // double opsPerSecond = kdtree.getNearestCalls() / elapsedSec;
-        // StdOut.printf("%s is close to %s\n", nearest, p);
-        // StdOut.printf("The nearest-neighbor calls performed per second is: %f\n", opsPerSecond);
-        // // should be 1.6403299999994846E-7
-        // StdOut.printf("The squaredDistance from " + p + " to " + nearest + " is " +
-        //                       nearest.distanceSquaredTo(p) + "\n");
+        // start timer to find number of operations per second
+        long start = System.nanoTime();
+        Point2D p = new Point2D(0.864, 0.565);
+        // for input1M.txt, should be (0.864377, 0.564852)
+        Point2D nearest = kdtree.nearest(p);
+        long end = System.nanoTime();
+
+        StdOut.printf("The number of nearest neighbor calls is: %d \n", kdtree.getNearestCalls());
+        double elapsedSec = (end - start) / 1e9;
+        double opsPerSecond = kdtree.getNearestCalls() / elapsedSec;
+        StdOut.printf("%s is close to %s\n", nearest, p);
+        StdOut.printf("The nearest-neighbor calls performed per second is: %f\n", opsPerSecond);
+        // should be 1.6403299999994846E-7
+        StdOut.printf("The squaredDistance from " + p + " to " + nearest + " is " +
+                              nearest.distanceSquaredTo(p) + "\n");
     }
 }
