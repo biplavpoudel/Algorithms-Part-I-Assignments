@@ -5,6 +5,7 @@
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
@@ -38,9 +39,9 @@ public class KdTree {
     private static class Node {
 
         private Point2D pt;
+        // rect can be used to draw lines and range search for given rectangle
         private final RectHV rect;
         private Node leftNode, rightNode;
-        private Node parentNode;
         private boolean oddLevel;
         private int count;
 
@@ -231,8 +232,27 @@ public class KdTree {
      * @return iterable list of points in the range of the rectangle
      */
     public Iterable<Point2D> range(RectHV rect) {
-        return null;
+        if (rect == null) throw new IllegalArgumentException();
+        Queue<Point2D> rangeQ = new Queue<>();
+        enqueue(root, rect, rangeQ);
+        return rangeQ;
     }
+
+    /**
+     * Recursively checks for nodes that are inside the rectangle (or on the boundary),
+     * and stores the points that satisfy the condition.
+     *
+     * @param curr   current Node on kd-Tree
+     * @param rect   given query rectangle
+     * @param rangeQ queue that holds points that fall inside the rectangle
+     */
+    private void enqueue(Node curr, RectHV rect, Queue<Point2D> rangeQ) {
+        if (curr == null || !curr.rect.intersects(rect)) return;
+        enqueue(curr.leftNode, rect, rangeQ);
+        if (rect.contains(curr.pt)) rangeQ.enqueue(curr.pt);
+        enqueue(curr.rightNode, rect, rangeQ);
+    }
+
 
     /**
      * Returns a nearest neighbor in the set to point p
@@ -241,7 +261,34 @@ public class KdTree {
      * @return the Point2D point closest to the query point; null if the kdTree is empty.
      */
     public Point2D nearest(Point2D p) {
-        return null;
+        if (p == null) throw new IllegalArgumentException();
+        return (root == null || !root.rect.contains(p)) ? null : nearest(root, p, root.pt, false);
+    }
+
+    private Point2D nearest(Node curr, Point2D that, Point2D closest, boolean oddLevel) {
+        double closestDist = closest.distanceSquaredTo(that);
+        double currDist = curr.pt.distanceSquaredTo(that);
+
+        if (curr.rect.contains(that) && currDist < closestDist) {
+            closest = curr.pt;
+        }
+        int cmp;
+
+        if (!oddLevel) cmp = Double.compare(that.x(), curr.pt.x());
+        else cmp = Double.compare(that.y(), curr.pt.y());
+
+        if (cmp > 0 && curr.rightNode != null) {
+            closest = nearest(curr.rightNode, that, closest, !oddLevel);
+        }
+        else if (cmp == 0 && curr.pt.equals(that)) {
+            return curr.pt;
+        }
+        else {
+            if (curr.leftNode != null)
+                closest = nearest(curr.leftNode, that, closest, !oddLevel);
+        }
+
+        return closest;
     }
 
     // Unit testing of the methods
