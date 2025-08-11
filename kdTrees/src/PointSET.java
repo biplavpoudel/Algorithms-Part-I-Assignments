@@ -65,7 +65,7 @@ public class PointSET {
     // Draws all points to standard draw
     public void draw() {
         for (Point2D point : rbBST) {
-            StdDraw.setPenRadius(0.015);
+            // StdDraw.setPenRadius(0.015);
             StdDraw.point(point.x(), point.y());
         }
     }

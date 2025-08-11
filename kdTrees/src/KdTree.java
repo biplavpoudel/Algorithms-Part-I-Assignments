@@ -70,7 +70,7 @@ public class KdTree {
         this.nearestNeighborCalls = 0;
     }
 
-    public int getNearestCalls() {
+    private int getNearestCalls() {
         return nearestNeighborCalls;
     }
 
@@ -223,7 +223,7 @@ public class KdTree {
     private void draw(Node currNode, boolean oddLevel) {
         if (currNode == null) return;
         StdDraw.setPenColor(StdDraw.BLACK);
-        StdDraw.setPenRadius(0.015);
+        // StdDraw.setPenRadius(0.015);
         StdDraw.point(currNode.pt.x(), currNode.pt.y());
         if (oddLevel) {
             StdDraw.setPenColor(StdDraw.BLUE);
