@@ -8,7 +8,6 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
@@ -86,6 +85,7 @@ public class PointSET {
     // Returns a nearest neighbor in the set to point p; null if the set is empty
     // Worst Case: time proportional to the number of points in the set
     public Point2D nearest(Point2D p) {
+        if (isEmpty()) return null;
         if (p == null) throw new IllegalArgumentException("The point object is null!");
         Point2D closestNeighbor = rbBST.iterator().next();
         // Squared distance is faster to compute as sqrt is not used
@@ -103,12 +103,12 @@ public class PointSET {
     // Unit testing of the methods
     public static void main(String[] args) {
         PointSET sets = new PointSET();
-        while (!StdIn.isEmpty()) {
-            double xAxis = StdIn.readDouble();
-            double yAxis = StdIn.readDouble();
-            StdOut.printf("(%f, %f)\n", xAxis, yAxis);
-            sets.insert(new Point2D(xAxis, yAxis));
-        }
+        // while (!StdIn.isEmpty()) {
+        //     double xAxis = StdIn.readDouble();
+        //     double yAxis = StdIn.readDouble();
+        //     StdOut.printf("(%f, %f)\n", xAxis, yAxis);
+        //     sets.insert(new Point2D(xAxis, yAxis));
+        // }
         sets.draw();
 
         // For nearest neighbor

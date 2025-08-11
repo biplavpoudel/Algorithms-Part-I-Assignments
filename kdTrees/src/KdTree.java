@@ -119,11 +119,12 @@ public class KdTree {
 
     private Node put(Node currNode, Point2D point, boolean oddLevel, RectHV rect) {
         if (currNode == null) return new Node(point, 1, oddLevel, rect);
+        if (currNode.pt.equals(point)) return currNode;
         // for even levels, x-axis is compared
         if (!oddLevel) {
             int cmp = Double.compare(point.x(), currNode.pt.x());
             RectHV boundary;
-            if (cmp >= 0) {
+            if (cmp > 0) {
                 if (currNode.rightNode == null) {
                     boundary = new RectHV(currNode.pt.x(), rect.ymin(), rect.xmax(),
                                           rect.ymax());
@@ -148,7 +149,7 @@ public class KdTree {
         else {
             RectHV boundary;
             int cmp = Double.compare(point.y(), currNode.pt.y());
-            if (cmp >= 0) {
+            if (cmp > 0) {
                 if (currNode.rightNode == null) {
                     boundary = new RectHV(rect.xmin(), currNode.pt.y(), rect.xmax(),
                                           rect.ymax());
